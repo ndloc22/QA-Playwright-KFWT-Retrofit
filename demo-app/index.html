@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E.ON KFWT - Kleinfernwirktechnik (Retrofit / Nachrüstvariante)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --eon-red: #ea1c24;
+      --eon-red-hover: #c81018;
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.95);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --primary: #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-dark) 80%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      background: var(--eon-red);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+    }
+
+    .brand-title h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .brand-title p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .user-info {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .role-tag {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    main {
+      flex: 1;
+      padding: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    input[type="text"], select {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-eon {
+      background: var(--eon-red);
+      color: #fff;
+    }
+    .btn-eon:hover { background: var(--eon-red-hover); }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 14px 18px;
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-test { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-incomplete { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Modal / Form */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    }
+
+    .modal-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="logo-badge">e.on</span>
+      <div class="brand-title">
+        <h1>Kleinfernwirktechnik (KFWT)</h1>
+        <p>Telecontrol Management System — Retrofit Module</p>
+      </div>
+    </div>
+    <div class="user-info">
+      <span>Angemeldet als: <strong>Planer.Retrofit@eon.com</strong></span>
+      <span class="role-tag">Planer digiONS/Retrofit</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="section-header">
+      <div>
+        <h2>Retrofit C-Station Stocklist (Nachrüstvariante)</h2>
+        <p style="color: var(--muted); font-size: 13px; margin-top: 4px;">Verwaltung und Quelle-Senke-Test für Retrofit-Stationen</p>
+      </div>
+      <div class="controls">
+        <input type="text" id="search-input" placeholder="Nach TP / Station suchen..." aria-label="Stationssuche">
+        <select id="status-filter" aria-label="Statusfilter">
+          <option value="ALL">Alle Status</option>
+          <option value="SOURCE_SINK_TEST_RETROFIT">Quelle-Senke-Test (Retrofit)</option>
+          <option value="INCOMPLETE_RETROFIT">Incomplete Retrofit</option>
+          <option value="COMPLETED">Abgeschlossen</option>
+        </select>
+        <button class="btn btn-eon" id="btn-create-retrofit">Neue Retrofit Station</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="retrofit-table">
+        <thead>
+          <tr>
+            <th>Station ID</th>
+            <th>Technical Place (TP)</th>
+            <th>VNB / DSO</th>
+            <th>Gerätetyp</th>
+            <th>KuRi / NS</th>
+            <th>Status</th>
+            <th>Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="retrofit-tbody">
+          <tr data-id="RETRO-2026-001" data-status="SOURCE_SINK_TEST_RETROFIT">
+            <td><strong>RETRO-2026-001</strong></td>
+            <td>TP-BAYERN-ST01</td>
+            <td>Bayernwerk Netz GmbH</td>
+            <td><span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">RETROFIT</span></td>
+            <td>KuRi Kommunikationsfähig</td>
+            <td><span class="status-badge status-test" id="status-RETRO-2026-001">SOURCE_SINK_TEST_RETROFIT</span></td>
+            <td><button class="btn btn-secondary btn-action-test" data-id="RETRO-2026-001">Quelle-Senke-Test ausführen</button></td>
+          </tr>
+          <tr data-id="RETRO-2026-002" data-status="INCOMPLETE_RETROFIT">
+            <td><strong>RETRO-2026-002</strong></td>
+            <td>TP-AVACON-ST04</td>
+            <td>Avacon Netz GmbH</td>
+            <td><span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">RETROFIT</span></td>
+            <td>NS Überwachung</td>
+            <td><span class="status-badge status-incomplete">INCOMPLETE_RETROFIT</span></td>
+            <td><button class="btn btn-secondary" disabled>Warten auf HW</button></td>
+          </tr>
+          <tr data-id="RETRO-2026-003" data-status="COMPLETED">
+            <td><strong>RETRO-2026-003</strong></td>
+            <td>TP-EEM-ST09</td>
+            <td>E.DIS Netz GmbH</td>
+            <td><span class="status-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">RETROFIT</span></td>
+            <td>KuRi + NS</td>
+            <td><span class="status-badge status-success">COMPLETED</span></td>
+            <td><button class="btn btn-secondary" disabled>Abgeschlossen</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal: Quelle-Senke-Test -->
+  <div class="modal-overlay" id="modal-test">
+    <div class="modal-card">
+      <h3 id="modal-title">Quelle-Senke-Test Retrofit (KFWT-363)</h3>
+      <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">
+        Prüfung der Fernwirkverbindung und Signalübertragung für Station <strong id="modal-station-id" style="color: #fff;"></strong>
+      </p>
+
+      <form id="form-source-sink">
+        <div class="form-group">
+          <label for="test-signal-type">Signal-Typ</label>
+          <select id="test-signal-type" required>
+            <option value="IEC_104_TELECONTROL">IEC 60870-5-104 Telecontrol</option>
+            <option value="KURI_COMMUNICATION">KuRi Kurzschlussanzeiger</option>
+            <option value="TRAFO_TEMP">Transformator Temperatur</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="test-result-input">Testergebnis-Bemerkung</label>
+          <input type="text" id="test-result-input" placeholder="z.B. Signalübertragung erfolgreich bestätigt" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-test">Abbrechen</button>
+          <button type="submit" class="btn btn-eon" id="btn-submit-test">Test erfolgreich abschließen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const statusFilter = document.getElementById('status-filter');
+    const tbody = document.getElementById('retrofit-tbody');
+    const modalTest = document.getElementById('modal-test');
+    const modalStationId = document.getElementById('modal-station-id');
+    const btnCancelTest = document.getElementById('btn-cancel-test');
+    const formSourceSink = document.getElementById('form-source-sink');
+    const testResultInput = document.getElementById('test-result-input');
+
+    let currentTestingId = null;
+
+    // Filter logic
+    function applyFilter() {
+      const search = searchInput.value.toLowerCase().trim();
+      const status = statusFilter.value;
+      const rows = tbody.querySelectorAll('tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowStatus = row.getAttribute('data-status');
+        const matchSearch = text.includes(search);
+        const matchStatus = (status === 'ALL' || rowStatus === status);
+
+        row.style.display = (matchSearch && matchStatus) ? '' : 'none';
+      });
+    }
+
+    searchInput.addEventListener('input', applyFilter);
+    statusFilter.addEventListener('change', applyFilter);
+
+    // Open Source-Sink Test Modal
+    document.addEventListener('click', function(e) {
+      if (e.target && e.target.classList.contains('btn-action-test')) {
+        currentTestingId = e.target.getAttribute('data-id');
+        modalStationId.textContent = currentTestingId;
+        testResultInput.value = '';
+        modalTest.style.display = 'flex';
+      }
+    });
+
+    btnCancelTest.addEventListener('click', () => {
+      modalTest.style.display = 'none';
+    });
+
+    formSourceSink.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!currentTestingId) return;
+
+      const statusBadge = document.getElementById(`status-${currentTestingId}`);
+      if (statusBadge) {
+        statusBadge.textContent = 'COMPLETED';
+        statusBadge.className = 'status-badge status-success';
+        const row = statusBadge.closest('tr');
+        row.setAttribute('data-status', 'COMPLETED');
+        const actionBtn = row.querySelector('.btn-action-test');
+        if (actionBtn) {
+          actionBtn.textContent = 'Abgeschlossen';
+          actionBtn.disabled = true;
+          actionBtn.className = 'btn btn-secondary';
+        }
+      }
+
+      modalTest.style.display = 'none';
+      applyFilter();
+    });
+  </script>
+</body>
+</html>

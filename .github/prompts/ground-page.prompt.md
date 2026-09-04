@@ -1,0 +1,31 @@
+---
+name: ground-page
+description: Tạo/cập nhật Page Object từ selector THẬT của ứng dụng (record/pick-locator/MCP), làm nền tảng chống đoán selector cho /new-test
+---
+
+# Lệnh /ground-page: Grounding Page Object Từ App Thật
+
+Bạn là QA Automation Engineer. Mục tiêu: tạo hoặc cập nhật một Page Object trong `tests/pages/` mà **mọi locator đều đến từ nguồn thật**, để `/new-test` không bao giờ phải đoán selector.
+
+## NGUỒN SELECTOR HỢP LỆ (chỉ được dùng các nguồn này)
+1. Đoạn code Tester vừa **Record (codegen)** dán vào.
+2. Selector lấy từ **Pick Locator** của Playwright extension.
+3. Quan sát trực tiếp qua **MCP Playwright / trình duyệt** trên `BASE_URL`.
+4. HTML/DOM snapshot Tester cung cấp.
+
+> Nếu một phần tử không có trong nguồn nào ở trên → **KHÔNG tạo locator cho nó**; liệt kê vào mục "Cần Tester cung cấp".
+
+## YÊU CẦU ĐẦU RA
+- File `tests/pages/<Feature>Page.ts`:
+  - Chỉ chứa `readonly Locator` + method thao tác mỏng (không chứa assertion nghiệp vụ).
+  - Ưu tiên `getByRole` > `getByLabel` > `getByPlaceholder` > `getByTestId`; tránh XPath/CSS dễ vỡ.
+  - Mỗi locator có comment ghi **nguồn** (record / pick-locator / MCP).
+- Danh sách phần tử **chưa xác thực được** để Tester bổ sung.
+- Gợi ý cách Tester tự lấy selector còn thiếu (Pick Locator / Record new).
+
+## ĐẦU VÀO MẪU
+```text
+- Feature/Trang: ...
+- BASE_URL: ...
+- [Nguồn] Đoạn code record / DOM snapshot / danh sách phần tử cần thao tác:
+```

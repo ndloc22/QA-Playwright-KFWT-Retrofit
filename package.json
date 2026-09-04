@@ -1,0 +1,22 @@
+{
+  "name": "qa-playwright-copilot-starter",
+  "version": "1.0.0",
+  "description": "Playwright Automation & 1-Click Workflow for QA Testers powered by GitHub Copilot",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report",
+    "record": "playwright codegen"
+  },
+  "keywords": ["playwright", "testing", "qa", "automation", "copilot"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.0"
+  }
+}
