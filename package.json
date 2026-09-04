@@ -8,9 +8,19 @@
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",
-    "record": "playwright codegen"
+    "record": "playwright codegen",
+    "server": "node demo-server.js",
+    "fetch-ticket": "node scripts/fetch-jira.js",
+    "generate-codebase-specs": "node scripts/generate-codebase-specs.js",
+    "auto-test": "node scripts/auto-test.js"
   },
-  "keywords": ["playwright", "testing", "qa", "automation", "copilot"],
+  "keywords": [
+    "playwright",
+    "testing",
+    "qa",
+    "automation",
+    "copilot"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -18,5 +28,8 @@
     "@types/node": "^22.0.0",
     "dotenv": "^16.4.7",
     "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "js-yaml": "^5.4.1"
   }
 }

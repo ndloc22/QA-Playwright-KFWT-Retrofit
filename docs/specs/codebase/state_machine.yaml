@@ -1,0 +1,2954 @@
+generatedAt: '2026-09-04T05:48:15.369Z'
+source: D:\Projects\kleinfernwirktechnik
+processCount: 50
+taskCount: 160
+transitionCount: 314
+roles:
+  - CENTRAL_CONTROL_ENGINEERING
+  - COMMUNICATIONS_ENGINEERING
+  - KFWG_ADMIN
+  - de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findRegionalPlanerRole(in.telecontrolDeviceId)
+  - in.generateSignalListTaskWorker
+  - in.operationalSystemControlRole
+  - in.regionalPlanerRole
+  - in.roleAssginForSignalList
+  - in.roleAssignAdditionalInformationTask
+  - in.roleAssignForParametrizationConnectionTestTask
+  - in.roleAssignForParametrizationRTUTask
+  - in.rolePlanerPlanConstructionRZ
+  - in.stAreaSecondaryTechnicianRole
+processes:
+  - name: AcosDataExport
+    path: eon-kfwg-core/processes/Functional Processes/AcosDataExport.p.json
+    dataClass: de.eon.kfwg.AcosDataExportData
+    taskCount: 0
+    transitionCount: 3
+    tasks: []
+    transitions:
+      - id: S10-f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          S10-f43: in.sharePointException != null && in.sharePointException.errorCode != 0
+      - id: S10-f5
+        name: null
+        conditions:
+          S10-f1: 'true'
+      - id: S10-f38
+        name: has Sharepoint Exception?
+        conditions:
+          S10-f71: in.sharePointException != null && in.sharePointException.errorCode != 0
+    roles: []
+  - name: AcosDataExport
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/AcosDataExport.p.json
+    dataClass: de.eon.kfwg.AcosDataExportData
+    taskCount: 0
+    transitionCount: 3
+    tasks: []
+    transitions:
+      - id: S10-f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          S10-f43: in.sharePointException != null && in.sharePointException.errorCode != 0
+      - id: S10-f5
+        name: null
+        conditions:
+          S10-f1: 'true'
+      - id: S10-f38
+        name: has Sharepoint Exception?
+        conditions:
+          S10-f71: in.sharePointException != null && in.sharePointException.errorCode != 0
+    roles: []
+  - name: AutomaticCreateTelecontrolDevices
+    path: eon-kfwg-core/processes/Functional Processes/AutomaticCreateTelecontrolDevices.p.json
+    dataClass: de.eon.kfwg.AutomaticCreateTelecontrolDeviceData
+    taskCount: 0
+    transitionCount: 3
+    tasks: []
+    transitions:
+      - id: f3
+        name: Anything left?
+        conditions:
+          f4: in.counter >= in.routerInformationIds.size()
+          f17: ''
+      - id: fl3
+        name: Anything left?
+        conditions:
+          fl4: in.counter >= in.routerInformationIds.size()
+          fl17: ''
+      - id: fv3
+        name: Anything left?
+        conditions:
+          fv4: in.counter >= in.routerInformationIds.size()
+          fv17: ''
+    roles: []
+  - name: AutomaticCreateTelecontrolDevices
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/AutomaticCreateTelecontrolDevices.p.json
+    dataClass: de.eon.kfwg.AutomaticCreateTelecontrolDeviceData
+    taskCount: 0
+    transitionCount: 3
+    tasks: []
+    transitions:
+      - id: f3
+        name: Anything left?
+        conditions:
+          f4: in.counter >= in.routerInformationIds.size()
+          f17: ''
+      - id: fl3
+        name: Anything left?
+        conditions:
+          fl4: in.counter >= in.routerInformationIds.size()
+          fl17: ''
+      - id: fv3
+        name: Anything left?
+        conditions:
+          fv4: in.counter >= in.routerInformationIds.size()
+          fv17: ''
+    roles: []
+  - name: BuildDocumentTemplate
+    path: eon-kfwg-core/processes/Functional Processes/BuildDocumentTemplate.p.json
+    dataClass: de.eon.kfwg.BuildDocumentTemplateData
+    taskCount: 0
+    transitionCount: 15
+    tasks: []
+    transitions:
+      - id: f131
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f142: in.sharePointException != null && in.sharePointException.errorCode != 0
+      - id: f134
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f141: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f137
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f150: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfPrintoutWngwValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f8
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f43: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfPrintoutWngwValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f12
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f21: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f13
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f22: in.sharePointException != null && in.sharePointException.errorCode != 0
+      - id: f83
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f128: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f107
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f123: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfPrintoutWngwValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f100
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f129: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f93
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f103: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f85
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f66: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfSignallistTemplateValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f59
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f62: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f16
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f55: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f17
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f56: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfSignallistTemplateValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f44
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f65: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+    roles: []
+  - name: BuildDocumentTemplate
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/BuildDocumentTemplate.p.json
+    dataClass: de.eon.kfwg.BuildDocumentTemplateData
+    taskCount: 0
+    transitionCount: 15
+    tasks: []
+    transitions:
+      - id: f131
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f142: in.sharePointException != null && in.sharePointException.errorCode != 0
+      - id: f134
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f141: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f137
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f150: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfPrintoutWngwValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f8
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f43: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfPrintoutWngwValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f12
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f21: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f13
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f22: in.sharePointException != null && in.sharePointException.errorCode != 0
+      - id: f83
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f128: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f107
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f123: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfPrintoutWngwValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f100
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f129: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f93
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f103: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f85
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f66: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfSignallistTemplateValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f59
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f62: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f16
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f55: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f17
+        name:
+          - file.size() == 1 &&
+          - extension file is valid ?
+        conditions:
+          f56: >-
+            in.sharepointListItems.size() == 1 &&
+            de.eon.kfwg.core.utils.FileUtil.isExtensionOfSignallistTemplateValid(in.getSharepointListItems().get(0).getFilename())
+      - id: f44
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f65: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+    roles: []
+  - name: ChangeTechnicalPlaceProcess
+    path: eon-kfwg-core/src_hd/de/eon/kfwg/ChangeTechnicalPlace/ChangeTechnicalPlaceProcess.p.json
+    dataClass: de.eon.kfwg.ChangeTechnicalPlace.ChangeTechnicalPlaceData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f13
+        name: null
+        conditions:
+          f17: in.bean.incompleteRetrofit
+    roles: []
+  - name: ChangeTechnicalPlaceProcess
+    path: kleinfernwirktechnik/eon-kfwg-core/src_hd/de/eon/kfwg/ChangeTechnicalPlace/ChangeTechnicalPlaceProcess.p.json
+    dataClass: de.eon.kfwg.ChangeTechnicalPlace.ChangeTechnicalPlaceData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f13
+        name: null
+        conditions:
+          f17: in.bean.incompleteRetrofit
+    roles: []
+  - name: CreateTelecontrolDeviceDigiOnsRetrofit
+    path: eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceDigiOnsRetrofit.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceData
+    taskCount: 15
+    transitionCount: 25
+    tasks:
+      - id: U31-f1
+        name: Add additional information
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskAddAdditionalInformation(in.telecontrolDeviceId,
+          de.eon.kfwg.core.enu...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignAdditionalInformationTask)
+      - id: U31-f4
+        name: Add additional information
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/AdditionalInformation/name",
+          in.telecontrolDe...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignAdditionalInformationTask)
+      - id: U90-f22
+        name: Connection Control
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ParametrizeCentralControlSystem/name",
+          in.tel...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U00-f2
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S30-f22
+        name: Connection test
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingConnectionTest/name",
+          in.telecontrolDe...
+        responsibleRole: KFWG_ADMIN
+      - id: S31-f22
+        name: Build telecontrol device
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingBuildTelecontrol/name",
+          in.telecontrol...
+        responsibleRole: KFWG_ADMIN
+      - id: U21-f1
+        name: Fulfill Source/Sink Test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/FulfillSource/name",
+          in.telecontrolDeviceId)%>
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S51-f17
+        name: Configure updated technical place
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ConfigureUpdatedTechnicalPlace/name",
+          in.tele...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S50-f17
+        name: Source/Sink Test Retrofit
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SourceSinkTestRetrofit/name",
+          in.telecontrolD...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S60-f32
+        name: Parametrization RTU
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ParametrizeRTU/name",
+          in.telecontrolDeviceId)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignForParametrizationRTUTask)
+      - id: S70-f39
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.RetryTask:start(de.eon.kfwg.core.rest.entity.EIOTResponse)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/EIOTCommunicationRetry/name",
+          in.telecontrolD...
+        responsibleRole: KFWG_ADMIN
+      - id: S52-f17
+        name: Define Regional Center
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/DefineRegionalCenter/name",
+          in.telecontrolDev...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S80-f48
+        name: Incomplete retrofit / station task
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: Incomplete retrofit variant C-Stations
+        responsibleRole: KFWG_ADMIN
+      - id: S71-f39
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.RetryTask:start(de.eon.kfwg.core.rest.entity.EIOTResponse)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/EIOTCommunicationRetry/name",
+          in.telecontrolD...
+        responsibleRole: KFWG_ADMIN
+      - id: S72-f16
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeIPAssignForStation/name",
+          in.telecontro...
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: U90-f2
+        name: feature enabled ?
+        conditions:
+          U90-f1: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.CONNECTION_CONTROL_SYSTEM.isActive()
+      - id: U00-f1
+        name: firewall enabled ?
+        conditions:
+          U00-f4: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.FIREWALL_CHANGE_ORDERED.isActive()
+          U00-f9: ''
+      - id: S31-f2
+        name: feature enabled ?
+        conditions:
+          S31-f7: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.BUILD_TELECONTROL_DEVICE.isActive()
+      - id: U21-f56
+        name: successfulSourceSinkTest?
+        conditions:
+          U21-f4: in.telecontrolDevice.sourceSinkTestData.sourceSinkTestResult.isSuccessful()
+      - id: S51-f3
+        name: proceed?
+        conditions:
+          S51-f1: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+          S51-f0: ''
+      - id: S51-f7
+        name: feature enabled ?
+        conditions:
+          S51-f8: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.CONFIGURE_UPDATED_TECHNICAL_PLACE.isActive()
+      - id: f18
+        name: DigiONS Type?
+        conditions:
+          f67: >-
+            de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) ==
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS
+      - id: f3
+        name: DigiONS Type?
+        conditions:
+          f64: >-
+            de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) ==
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS
+      - id: S60-f134
+        name: is ST_role found?
+        conditions:
+          S60-f137: de.eon.kfwg.core.constants.RolesConstants.KFWG_ADMIN.equals(in.roleAssignForParametrizationRTUTask)
+      - id: S70-f35
+        name: Communication EIOT success
+        conditions:
+          S70-f8: org.apache.commons.lang.StringUtils.isEmpty(in.EIOTEResponse.error)
+      - id: S70-f9
+        name: Transfer To EIoT?
+        conditions:
+          S70-f6: de.eon.kfwg.core.enums.Action.CANCEL.equals(in.action)
+      - id: S70-f13
+        name: feature enabled?
+        conditions:
+          S70-f14: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.EIOT_COMMUNICATION.isActive()
+      - id: f29
+        name: installation regional center selected ?
+        conditions:
+          f35: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isInstallationRegionalCenterSelected(in.telecontrolDeviceId)
+      - id: S52-f6
+        name: feature enabled ?
+        conditions:
+          S52-f7: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.DEFINE_REGION_OR_CENTER.isActive()
+      - id: f41
+        name: is RetrofitStation Incomplete?
+        conditions:
+          f17: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRetrofitStationIncomplete(in.telecontrolDeviceId)
+      - id: f51
+        name: isReachSourceSinkTestRetrofit?
+        conditions:
+          f46: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isReachSourceSinkTestRetrofit(in.telecontrolDeviceId)
+      - id: S80-f47
+        name: Changing technical place ?
+        conditions:
+          S80-f0: in.isChangingRetrofitTechnicalPlace
+      - id: f36
+        name: is MVFields Changed?
+        conditions:
+          f48: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isMVFieldsChanged(in.telecontrolDeviceId)
+      - id: S71-f35
+        name: Communication EIOT success
+        conditions:
+          S71-f8: org.apache.commons.lang.StringUtils.isEmpty(in.EIOTEResponse.error)
+      - id: S71-f9
+        name: Transfer To EIoT?
+        conditions:
+          S71-f6: de.eon.kfwg.core.enums.Action.CANCEL.equals(in.action)
+      - id: S71-f13
+        name: feature enabled?
+        conditions:
+          S71-f12: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.EIOT_COMMUNICATION.isActive()
+      - id: f24
+        name: DigiONS Type?
+        conditions:
+          f68: >-
+            de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) ==
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS
+      - id: f71
+        name:
+          - turn off
+          - EAM Transfer?
+        conditions:
+          f56: Boolean.valueOf(ivy.var.de_eon_kfwg_core_eam_skipTransfer)
+      - id: S72-f3
+        name: ASDU Found?
+        conditions:
+          S72-f14: in.connectTargetStockFound
+      - id: S72-f4
+        name: Reaching stock limit?
+        conditions:
+          S72-f9: de.eon.kfwg.core.service.ConnectionTargetService.getInstance().isSendMailAndUpdateLatestDate(in.#telecontrolDeviceId)
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.roleAssignAdditionalInformationTask
+      - in.roleAssignForParametrizationRTUTask
+  - name: CreateTelecontrolDeviceDigiOnsRetrofit
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceDigiOnsRetrofit.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceData
+    taskCount: 15
+    transitionCount: 25
+    tasks:
+      - id: U31-f1
+        name: Add additional information
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskAddAdditionalInformation(in.telecontrolDeviceId,
+          de.eon.kfwg.core.enu...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignAdditionalInformationTask)
+      - id: U31-f4
+        name: Add additional information
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/AdditionalInformation/name",
+          in.telecontrolDe...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignAdditionalInformationTask)
+      - id: U90-f22
+        name: Connection Control
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ParametrizeCentralControlSystem/name",
+          in.tel...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U00-f2
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S30-f22
+        name: Connection test
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingConnectionTest/name",
+          in.telecontrolDe...
+        responsibleRole: KFWG_ADMIN
+      - id: S31-f22
+        name: Build telecontrol device
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingBuildTelecontrol/name",
+          in.telecontrol...
+        responsibleRole: KFWG_ADMIN
+      - id: U21-f1
+        name: Fulfill Source/Sink Test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/FulfillSource/name",
+          in.telecontrolDeviceId)%>
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S51-f17
+        name: Configure updated technical place
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ConfigureUpdatedTechnicalPlace/name",
+          in.tele...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S50-f17
+        name: Source/Sink Test Retrofit
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SourceSinkTestRetrofit/name",
+          in.telecontrolD...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S60-f32
+        name: Parametrization RTU
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ParametrizeRTU/name",
+          in.telecontrolDeviceId)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignForParametrizationRTUTask)
+      - id: S70-f39
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.RetryTask:start(de.eon.kfwg.core.rest.entity.EIOTResponse)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/EIOTCommunicationRetry/name",
+          in.telecontrolD...
+        responsibleRole: KFWG_ADMIN
+      - id: S52-f17
+        name: Define Regional Center
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/DefineRegionalCenter/name",
+          in.telecontrolDev...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S80-f48
+        name: Incomplete retrofit / station task
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: Incomplete retrofit variant C-Stations
+        responsibleRole: KFWG_ADMIN
+      - id: S71-f39
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.RetryTask:start(de.eon.kfwg.core.rest.entity.EIOTResponse)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/EIOTCommunicationRetry/name",
+          in.telecontrolD...
+        responsibleRole: KFWG_ADMIN
+      - id: S72-f16
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeIPAssignForStation/name",
+          in.telecontro...
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: U90-f2
+        name: feature enabled ?
+        conditions:
+          U90-f1: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.CONNECTION_CONTROL_SYSTEM.isActive()
+      - id: U00-f1
+        name: firewall enabled ?
+        conditions:
+          U00-f4: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.FIREWALL_CHANGE_ORDERED.isActive()
+          U00-f9: ''
+      - id: S31-f2
+        name: feature enabled ?
+        conditions:
+          S31-f7: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.BUILD_TELECONTROL_DEVICE.isActive()
+      - id: U21-f56
+        name: successfulSourceSinkTest?
+        conditions:
+          U21-f4: in.telecontrolDevice.sourceSinkTestData.sourceSinkTestResult.isSuccessful()
+      - id: S51-f3
+        name: proceed?
+        conditions:
+          S51-f1: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+          S51-f0: ''
+      - id: S51-f7
+        name: feature enabled ?
+        conditions:
+          S51-f8: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.CONFIGURE_UPDATED_TECHNICAL_PLACE.isActive()
+      - id: f18
+        name: DigiONS Type?
+        conditions:
+          f67: >-
+            de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) ==
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS
+      - id: f3
+        name: DigiONS Type?
+        conditions:
+          f64: >-
+            de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) ==
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS
+      - id: S60-f134
+        name: is ST_role found?
+        conditions:
+          S60-f137: de.eon.kfwg.core.constants.RolesConstants.KFWG_ADMIN.equals(in.roleAssignForParametrizationRTUTask)
+      - id: S70-f35
+        name: Communication EIOT success
+        conditions:
+          S70-f8: org.apache.commons.lang.StringUtils.isEmpty(in.EIOTEResponse.error)
+      - id: S70-f9
+        name: Transfer To EIoT?
+        conditions:
+          S70-f6: de.eon.kfwg.core.enums.Action.CANCEL.equals(in.action)
+      - id: S70-f13
+        name: feature enabled?
+        conditions:
+          S70-f14: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.EIOT_COMMUNICATION.isActive()
+      - id: f29
+        name: installation regional center selected ?
+        conditions:
+          f35: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isInstallationRegionalCenterSelected(in.telecontrolDeviceId)
+      - id: S52-f6
+        name: feature enabled ?
+        conditions:
+          S52-f7: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.DEFINE_REGION_OR_CENTER.isActive()
+      - id: f41
+        name: is RetrofitStation Incomplete?
+        conditions:
+          f17: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRetrofitStationIncomplete(in.telecontrolDeviceId)
+      - id: f51
+        name: isReachSourceSinkTestRetrofit?
+        conditions:
+          f46: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isReachSourceSinkTestRetrofit(in.telecontrolDeviceId)
+      - id: S80-f47
+        name: Changing technical place ?
+        conditions:
+          S80-f0: in.isChangingRetrofitTechnicalPlace
+      - id: f36
+        name: is MVFields Changed?
+        conditions:
+          f48: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isMVFieldsChanged(in.telecontrolDeviceId)
+      - id: S71-f35
+        name: Communication EIOT success
+        conditions:
+          S71-f8: org.apache.commons.lang.StringUtils.isEmpty(in.EIOTEResponse.error)
+      - id: S71-f9
+        name: Transfer To EIoT?
+        conditions:
+          S71-f6: de.eon.kfwg.core.enums.Action.CANCEL.equals(in.action)
+      - id: S71-f13
+        name: feature enabled?
+        conditions:
+          S71-f12: de.eon.kfwg.core.featureflags.entity.ProcessFlowFeatures.EIOT_COMMUNICATION.isActive()
+      - id: f24
+        name: DigiONS Type?
+        conditions:
+          f68: >-
+            de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) ==
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS
+      - id: f71
+        name:
+          - turn off
+          - EAM Transfer?
+        conditions:
+          f56: Boolean.valueOf(ivy.var.de_eon_kfwg_core_eam_skipTransfer)
+      - id: S72-f3
+        name: ASDU Found?
+        conditions:
+          S72-f14: in.connectTargetStockFound
+      - id: S72-f4
+        name: Reaching stock limit?
+        conditions:
+          S72-f9: de.eon.kfwg.core.service.ConnectionTargetService.getInstance().isSendMailAndUpdateLatestDate(in.#telecontrolDeviceId)
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.roleAssignAdditionalInformationTask
+      - in.roleAssignForParametrizationRTUTask
+  - name: CreateTelecontrolDeviceSpecialService
+    path: eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceSpecialService.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceSpecialServiceData
+    taskCount: 15
+    transitionCount: 6
+    tasks:
+      - id: f44
+        name: Assign IP/ASDU
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/AssignASDUIP/name",
+          in.telecon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f21
+        name: 'Parametrization and / connection test shipment '
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ParametrizationAndConnectionTe...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignForParametrizationConnectionTestTask)
+      - id: f81
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: f14
+        name: Installation in control system / (UI or JSON Export&Import)
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/InstallationInControlSystem/na...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f60
+        name: Generate signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/GenerateSignalList/name",
+          in.t...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssginForSignalList)
+      - id: f41
+        name: Source/Sink-Test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/SourceSinkTest/name",
+          in.telec...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f16
+        name: Confirm router / activation in MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ConfirmRouterActivationMyCmdb/...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f64
+        name: Change Responsible / For Signal List
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ChangeResponsibleForSignalList...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f49
+        name: Request Router / Through MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/RequestRouterThroughMyCMDBProc...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f100
+        name: Task for resume / Router assign
+        dialog: de.eon.kfwg.ResumeRouterAssign:start(String)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/PerformMyCmdbRouterUpload/name...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: f29
+        name: Update signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/UpdateSignalList/name",
+          in.tel...
+        responsibleRole: in.generateSignalListTaskWorker
+      - id: f75
+        name: Request Router / Through MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/RequestRouterThroughMyCMDBProc...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f99
+        name: Task for resume / Router assign
+        dialog: de.eon.kfwg.ResumeRouterAssign:start(String)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/PerformMyCmdbRouterUpload/name...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: f124
+        name: Assign IP/ASDU
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/AssignASDUIP/name",
+          in.telecon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f32
+        name: Rework add detail information
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ReworkAddDetailInformation/nam...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+    transitions:
+      - id: f4
+        name: action?
+        conditions:
+          f70: de.eon.kfwg.core.enums.Action.SAVE.equals(in.#action)
+      - id: f134
+        name: is Admin role found ?
+        conditions:
+          f137: de.eon.kfwg.core.constants.RolesConstants.KFWG_ADMIN.equals(in.roleAssignForParametrizationConnectionTestTask)
+      - id: f59
+        name:
+          - Change responsible
+          - for Signal List?
+        conditions:
+          f63: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: f33
+        name: routerInformationStock Found
+        conditions:
+          f101: in.routerInformationStockFound
+          f108: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRequestRouterMyCMDBDone(in.telecontrolDeviceId)
+      - id: f8
+        name: the task done successful ?
+        conditions:
+          f15: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: f80
+        name: routerInformationStock Found?
+        conditions:
+          f131: in.routerInformationStockFound
+          f128: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRequestRouterMyCMDBDone(in.telecontrolDeviceId)
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - in.generateSignalListTaskWorker
+      - in.roleAssginForSignalList
+      - in.roleAssignForParametrizationConnectionTestTask
+      - in.rolePlanerPlanConstructionRZ
+  - name: CreateTelecontrolDeviceSpecialService
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceSpecialService.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceSpecialServiceData
+    taskCount: 15
+    transitionCount: 6
+    tasks:
+      - id: f44
+        name: Assign IP/ASDU
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/AssignASDUIP/name",
+          in.telecon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f21
+        name: 'Parametrization and / connection test shipment '
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ParametrizationAndConnectionTe...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssignForParametrizationConnectionTestTask)
+      - id: f81
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: f14
+        name: Installation in control system / (UI or JSON Export&Import)
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/InstallationInControlSystem/na...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f60
+        name: Generate signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/GenerateSignalList/name",
+          in.t...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.roleAssginForSignalList)
+      - id: f41
+        name: Source/Sink-Test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/SourceSinkTest/name",
+          in.telec...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f16
+        name: Confirm router / activation in MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ConfirmRouterActivationMyCmdb/...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f64
+        name: Change Responsible / For Signal List
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ChangeResponsibleForSignalList...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f49
+        name: Request Router / Through MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/RequestRouterThroughMyCMDBProc...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f100
+        name: Task for resume / Router assign
+        dialog: de.eon.kfwg.ResumeRouterAssign:start(String)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/PerformMyCmdbRouterUpload/name...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: f29
+        name: Update signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/UpdateSignalList/name",
+          in.tel...
+        responsibleRole: in.generateSignalListTaskWorker
+      - id: f75
+        name: Request Router / Through MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/RequestRouterThroughMyCMDBProc...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+      - id: f99
+        name: Task for resume / Router assign
+        dialog: de.eon.kfwg.ResumeRouterAssign:start(String)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/PerformMyCmdbRouterUpload/name...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: f124
+        name: Assign IP/ASDU
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/AssignASDUIP/name",
+          in.telecon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f32
+        name: Rework add detail information
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/SpecialProject/ReworkAddDetailInformation/nam...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.rolePlanerPlanConstructionRZ)
+    transitions:
+      - id: f4
+        name: action?
+        conditions:
+          f70: de.eon.kfwg.core.enums.Action.SAVE.equals(in.#action)
+      - id: f134
+        name: is Admin role found ?
+        conditions:
+          f137: de.eon.kfwg.core.constants.RolesConstants.KFWG_ADMIN.equals(in.roleAssignForParametrizationConnectionTestTask)
+      - id: f59
+        name:
+          - Change responsible
+          - for Signal List?
+        conditions:
+          f63: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: f33
+        name: routerInformationStock Found
+        conditions:
+          f101: in.routerInformationStockFound
+          f108: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRequestRouterMyCMDBDone(in.telecontrolDeviceId)
+      - id: f8
+        name: the task done successful ?
+        conditions:
+          f15: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: f80
+        name: routerInformationStock Found?
+        conditions:
+          f131: in.routerInformationStockFound
+          f128: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRequestRouterMyCMDBDone(in.telecontrolDeviceId)
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - in.generateSignalListTaskWorker
+      - in.roleAssginForSignalList
+      - in.roleAssignForParametrizationConnectionTestTask
+      - in.rolePlanerPlanConstructionRZ
+  - name: CreateTelecontrolDeviceWNGW
+    path: eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceWNGW.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceWNGWData
+    taskCount: 19
+    transitionCount: 18
+    tasks:
+      - id: f44
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeIPAssignForStation/name",
+          in.telecontro...
+        responsibleRole: KFWG_ADMIN
+      - id: f51
+        name: Task for resume / Router assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeRouterInformationAssignForStation/name"...
+        responsibleRole: KFWG_ADMIN
+      - id: f12
+        name: Generate signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/generateSignalList",
+          in.telecontrolDevic...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f19
+        name: Installation in control system / (UI or JSON Export&Import)
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/installationInControlSystem",
+          in.telecon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f21
+        name: Parametrization  / and connection test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/parametrizationAndConnectionTest",
+          in.te...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: f23
+        name: Send device / to customer
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/sendDeviceToCustomer",
+          in.telecontrolDev...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: f25
+        name: Confirm customer connection test / (UI or JSON Export/Import)
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskConfirmCustomerConnectionTest(in.telecontrolDeviceId,
+          in.#customerCon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f27
+        name: Confirm / Source/Sink-Test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/sourceSinkTestSuccessful",
+          in.telecontro...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f47
+        name: Activation of / telecontrol device
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/telecontrolDeviceActivation",
+          in.telecon...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: f54
+        name: Confirm router activation / in MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/confirmRouterActivationMyCmdb",
+          in.telec...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f61
+        name: DZE functional test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/testFunctionalDze",
+          in.telecontrolDevice...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: f81
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S10-f27
+        name: Suggest possible / Source/Sink-Test dates
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/suggestPossibleSourceSinkTest",
+          in.telec...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S10-f31
+        name: Confirm final date
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/confirmPossibleSourceSinkTest",
+          in.telec...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S10-f36
+        name: Choose possible Source/Sink Test Appointment
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/choosePossibleSourceSinkTestForExternalS...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S10-f41
+        name: Choose possible Source/Sink Test date/s  / Secondary Technician
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:startForChoosingSourceSinkTestDate(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/choosePossibleSourceSinkTest",
+          in.teleco...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: f162
+        name: Define delivery address
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/defineDeliveryAddress",
+          in.telecontrolDe...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f55
+        name: Confirm activation / on customer side
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/confirmActivationCustomerSide",
+          in.telec...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f98
+        name: Update generate signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/updateSignalList",
+          in.telecontrolDeviceI...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+    transitions:
+      - id: f34
+        name: null
+        conditions:
+          f8: de.eon.kfwg.core.service.ConnectionTargetService.getInstance().isSendMailAndUpdateLatestDate(in.#telecontrolDeviceId)
+      - id: f31
+        name: null
+        conditions:
+          f78: in.connectTargetStockFound
+      - id: f45
+        name: routerInformationStock Found?
+        conditions:
+          f17: in.routerInformationStockFound
+      - id: f62
+        name: isDzeFunctionalTestTaskRequired ?
+        conditions:
+          f107: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isDzeFunctionalTestTaskRequired(in.telecontrolDeviceId)
+      - id: f4
+        name: action?
+        conditions:
+          f70: de.eon.kfwg.core.enums.Action.SAVE.equals(in.#action)
+      - id: f112
+        name: the task done successful ?
+        conditions:
+          f93: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: f117
+        name: CustomerConnectionTest Successful?
+        conditions:
+          f154: in.customerConnectionTestSuccessful
+      - id: f120
+        name: SourceSinkTest Successful?
+        conditions:
+          f101: in.sourceSinkTestSuccessful
+      - id: f124
+        name: null
+        conditions:
+          f103: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isMigrationDevice(in.telecontrolDeviceId)
+      - id: f134
+        name: is Admin role found ?
+        conditions:
+          f137: de.eon.kfwg.core.constants.RolesConstants.KFWG_ADMIN.equals(in.stAreaSecondaryTechnicianRole)
+      - id: f145
+        name: null
+        conditions:
+          f171: in.telecontrolDevice.getStatus() == null
+          f170: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_INSTALLATION_IN_CONTROL_SYSTEM.equals(in.telecontrolDevice.status)
+          f144: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_PARAMETRIZATION_AND_CONNECTION_TEST.equals(in.telecontrolDevice.status)
+          f147: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_CONFIRM_CUSTOMER_CONNECTION_TEST.equals(in.telecontrolDevice.status)
+          f148: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_CONFIRM_SOURCE_SINK_TEST.equals(in.telecontrolDevice.status)
+          f149: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_ACTIVATION_OF_TELECONTROL_DEVICE.equals(in.telecontrolDevice.status)
+          f177: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_CONFIRM_ROUTER_ACTIVATION_IN_MYCMDB.equals(in.telecontrolDevice.status)
+          f151: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_DZE_FUNCTIONAL_TEST.equals(in.telecontrolDevice.status)
+      - id: S10-f32
+        name: selected Date ?
+        conditions:
+          S10-f46: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().choosingAppointmentDateSelected(in.telecontrolDeviceId)
+      - id: S10-f34
+        name: null
+        conditions:
+          S10-f7: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().noCommonAppointmentDateFound(in.telecontrolDeviceId)
+          S10-f23: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().confirmedFinalDateAppointmentSelected(in.telecontrolDeviceId)
+      - id: S10-f47
+        name: involved external ST ?
+        conditions:
+          S10-f29: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isExternalSecondaryTechnicianInvolved(in.telecontrolDeviceId)
+      - id: S10-f44
+        name: is not appointment date selected?
+        conditions:
+          S10-f59: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().noSelectedAppointment(in.telecontrolDeviceId)
+      - id: f72
+        name: isDefinedDeliveryAddress
+        conditions:
+          f95: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isWngwDefinedDeliveryAddress(in.telecontrolDeviceId)
+      - id: S20-f2
+        name: templateId find?
+        conditions:
+          S20-f1: in.#templateId != null
+      - id: S30-f181
+        name: templateId find?
+        conditions:
+          S30-f182: in.#templateId != null
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.operationalSystemControlRole
+      - in.regionalPlanerRole
+      - in.stAreaSecondaryTechnicianRole
+  - name: CreateTelecontrolDeviceWNGW
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceWNGW.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceWNGWData
+    taskCount: 19
+    transitionCount: 18
+    tasks:
+      - id: f44
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeIPAssignForStation/name",
+          in.telecontro...
+        responsibleRole: KFWG_ADMIN
+      - id: f51
+        name: Task for resume / Router assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeRouterInformationAssignForStation/name"...
+        responsibleRole: KFWG_ADMIN
+      - id: f12
+        name: Generate signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/generateSignalList",
+          in.telecontrolDevic...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f19
+        name: Installation in control system / (UI or JSON Export&Import)
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/installationInControlSystem",
+          in.telecon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f21
+        name: Parametrization  / and connection test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/parametrizationAndConnectionTest",
+          in.te...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: f23
+        name: Send device / to customer
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/sendDeviceToCustomer",
+          in.telecontrolDev...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: f25
+        name: Confirm customer connection test / (UI or JSON Export/Import)
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskConfirmCustomerConnectionTest(in.telecontrolDeviceId,
+          in.#customerCon...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f27
+        name: Confirm / Source/Sink-Test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/sourceSinkTestSuccessful",
+          in.telecontro...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: f47
+        name: Activation of / telecontrol device
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/telecontrolDeviceActivation",
+          in.telecon...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: f54
+        name: Confirm router activation / in MyCMDB
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/confirmRouterActivationMyCmdb",
+          in.telec...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f61
+        name: DZE functional test
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/testFunctionalDze",
+          in.telecontrolDevice...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: f81
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S10-f27
+        name: Suggest possible / Source/Sink-Test dates
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/suggestPossibleSourceSinkTest",
+          in.telec...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S10-f31
+        name: Confirm final date
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/confirmPossibleSourceSinkTest",
+          in.telec...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S10-f36
+        name: Choose possible Source/Sink Test Appointment
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/choosePossibleSourceSinkTestForExternalS...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S10-f41
+        name: Choose possible Source/Sink Test date/s  / Secondary Technician
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:startForChoosingSourceSinkTestDate(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/choosePossibleSourceSinkTest",
+          in.teleco...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: f162
+        name: Define delivery address
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/defineDeliveryAddress",
+          in.telecontrolDe...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f55
+        name: Confirm activation / on customer side
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/confirmActivationCustomerSide",
+          in.telec...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: f98
+        name: Update generate signal list
+        dialog: de.eon.kfwg.TelecontrolDeviceRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGW/updateSignalList",
+          in.telecontrolDeviceI...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+    transitions:
+      - id: f34
+        name: null
+        conditions:
+          f8: de.eon.kfwg.core.service.ConnectionTargetService.getInstance().isSendMailAndUpdateLatestDate(in.#telecontrolDeviceId)
+      - id: f31
+        name: null
+        conditions:
+          f78: in.connectTargetStockFound
+      - id: f45
+        name: routerInformationStock Found?
+        conditions:
+          f17: in.routerInformationStockFound
+      - id: f62
+        name: isDzeFunctionalTestTaskRequired ?
+        conditions:
+          f107: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isDzeFunctionalTestTaskRequired(in.telecontrolDeviceId)
+      - id: f4
+        name: action?
+        conditions:
+          f70: de.eon.kfwg.core.enums.Action.SAVE.equals(in.#action)
+      - id: f112
+        name: the task done successful ?
+        conditions:
+          f93: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: f117
+        name: CustomerConnectionTest Successful?
+        conditions:
+          f154: in.customerConnectionTestSuccessful
+      - id: f120
+        name: SourceSinkTest Successful?
+        conditions:
+          f101: in.sourceSinkTestSuccessful
+      - id: f124
+        name: null
+        conditions:
+          f103: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isMigrationDevice(in.telecontrolDeviceId)
+      - id: f134
+        name: is Admin role found ?
+        conditions:
+          f137: de.eon.kfwg.core.constants.RolesConstants.KFWG_ADMIN.equals(in.stAreaSecondaryTechnicianRole)
+      - id: f145
+        name: null
+        conditions:
+          f171: in.telecontrolDevice.getStatus() == null
+          f170: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_INSTALLATION_IN_CONTROL_SYSTEM.equals(in.telecontrolDevice.status)
+          f144: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_PARAMETRIZATION_AND_CONNECTION_TEST.equals(in.telecontrolDevice.status)
+          f147: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_CONFIRM_CUSTOMER_CONNECTION_TEST.equals(in.telecontrolDevice.status)
+          f148: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_CONFIRM_SOURCE_SINK_TEST.equals(in.telecontrolDevice.status)
+          f149: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_ACTIVATION_OF_TELECONTROL_DEVICE.equals(in.telecontrolDevice.status)
+          f177: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_CONFIRM_ROUTER_ACTIVATION_IN_MYCMDB.equals(in.telecontrolDevice.status)
+          f151: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.WNGW_DZE_FUNCTIONAL_TEST.equals(in.telecontrolDevice.status)
+      - id: S10-f32
+        name: selected Date ?
+        conditions:
+          S10-f46: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().choosingAppointmentDateSelected(in.telecontrolDeviceId)
+      - id: S10-f34
+        name: null
+        conditions:
+          S10-f7: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().noCommonAppointmentDateFound(in.telecontrolDeviceId)
+          S10-f23: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().confirmedFinalDateAppointmentSelected(in.telecontrolDeviceId)
+      - id: S10-f47
+        name: involved external ST ?
+        conditions:
+          S10-f29: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isExternalSecondaryTechnicianInvolved(in.telecontrolDeviceId)
+      - id: S10-f44
+        name: is not appointment date selected?
+        conditions:
+          S10-f59: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().noSelectedAppointment(in.telecontrolDeviceId)
+      - id: f72
+        name: isDefinedDeliveryAddress
+        conditions:
+          f95: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isWngwDefinedDeliveryAddress(in.telecontrolDeviceId)
+      - id: S20-f2
+        name: templateId find?
+        conditions:
+          S20-f1: in.#templateId != null
+      - id: S30-f181
+        name: templateId find?
+        conditions:
+          S30-f182: in.#templateId != null
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.operationalSystemControlRole
+      - in.regionalPlanerRole
+      - in.stAreaSecondaryTechnicianRole
+  - name: CreateTelecontrolDeviceWNGWLight
+    path: eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceWNGWLight.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceWNGWLightData
+    taskCount: 10
+    transitionCount: 2
+    tasks:
+      - id: U10-f4
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: U20-f2
+        name: Configuration container
+        dialog: de.eon.kfwg.ContainerConfigurationWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingConfigurationContainer/name",
+          in.telec...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S30-f12
+        name: Installation in control system
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGWLight/InstallationInControlSystem/name",
+          ...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S31-f12
+        name: Build telecontrol device & connection test
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGWLight/BuildTelecontrolDeviceAndConnection...
+        responsibleRole: KFWG_ADMIN
+      - id: U70-f3
+        name: WngwLightRequest
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ACTIVATION_OF_TELECONTROL_DEVICE_AND_FUN...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: S90-f22
+        name: Additional Task
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskAddAdditionalInformation(in.telecontrolDeviceId,
+          in.isNewAdditionTask)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: S50-f24
+        name: Configure updated technical place
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ConfigureUpdatedTechnicalPlace/name",
+          in.tele...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S20-f4
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S40-f2
+        name: Configuration container
+        dialog: de.eon.kfwg.ContainerConfigurationWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingConfigurationContainer/name",
+          in.telec...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S21-f44
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeIPAssignForStation/name",
+          in.telecontro...
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: f13
+        name: Back to additional information task?
+        conditions:
+          f10: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: S21-f35
+        name: null
+        conditions:
+          S21-f1: in.connectTargetStockFound
+          S21-f37: ''
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.operationalSystemControlRole
+      - in.regionalPlanerRole
+  - name: CreateTelecontrolDeviceWNGWLight
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceWNGWLight.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceWNGWLightData
+    taskCount: 10
+    transitionCount: 2
+    tasks:
+      - id: U10-f4
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: U20-f2
+        name: Configuration container
+        dialog: de.eon.kfwg.ContainerConfigurationWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingConfigurationContainer/name",
+          in.telec...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S30-f12
+        name: Installation in control system
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGWLight/InstallationInControlSystem/name",
+          ...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S31-f12
+        name: Build telecontrol device & connection test
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WNGWLight/BuildTelecontrolDeviceAndConnection...
+        responsibleRole: KFWG_ADMIN
+      - id: U70-f3
+        name: WngwLightRequest
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ACTIVATION_OF_TELECONTROL_DEVICE_AND_FUN...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: S90-f22
+        name: Additional Task
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskAddAdditionalInformation(in.telecontrolDeviceId,
+          in.isNewAdditionTask)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: S50-f24
+        name: Configure updated technical place
+        dialog: de.eon.kfwg.WngwLightRequest:start(String,String,Boolean,de.eon.kfwg.core.enums.TelecontrolDeviceType,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ConfigureUpdatedTechnicalPlace/name",
+          in.tele...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: S20-f4
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingFirewallRequest/name",
+          in.telecontrolD...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S40-f2
+        name: Configuration container
+        dialog: de.eon.kfwg.ContainerConfigurationWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/WaitingConfigurationContainer/name",
+          in.telec...
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: S21-f44
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/ResumeIPAssignForStation/name",
+          in.telecontro...
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: f13
+        name: Back to additional information task?
+        conditions:
+          f10: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: S21-f35
+        name: null
+        conditions:
+          S21-f1: in.connectTargetStockFound
+          S21-f37: ''
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.operationalSystemControlRole
+      - in.regionalPlanerRole
+  - name: CreateTelecontrolDeviceWngwV2
+    path: eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceWngwV2.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceWngwV2Data
+    taskCount: 18
+    transitionCount: 15
+    tasks:
+      - id: U30-f4
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ORDER_FIREWALL_CHANGE.getTaskName(),
+          in....
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: U50-f12
+        name: Installation in control system
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.INSTALLATION_IN_CONTROL_SYSTEM.getTaskNa...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U60-f12
+        name: Build telecontrol device & connection test
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.BUILD_TELECONTROL_DEVICE_AND_CONNECTION_...
+        responsibleRole: KFWG_ADMIN
+      - id: U70-f4
+        name: Additional Task
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskAddAdditionalInformation(in.telecontrolDeviceId,
+          in.isNewAdditionTask)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: U90-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.GENERATE_SIGNAL_LIST.getTaskName(),
+          in.t...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: U00-f3
+        name: Configure updated technical place
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CONFIGURATE_UPDATE_TECHNICAL_PLACE.getTa...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U10-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.PARAMETRIZATION_AND_CONNECTION_TEST.getT...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: U20-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.DEFINE_DELIVERY_ADDRESS.getTaskName(),
+          i...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: U31-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.SEND_DEVICE_TO_CUSTOMER.getTaskName(),
+          i...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: U51-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskConfirmCustomerConnectionTest(in.telecontrolDeviceId,
+          in.isConnection...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U71-f4
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.SUGGEST_POSSIBLE_SOURCE_SINK_TEST_DATES....
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U91-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CHOOSE_POSIBLE_SOURCE_SINK_TEST_DATES.ge...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U01-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CHOOSE_POSIBLE_SOURCE_SINK_TEST_DATES.ge...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: U21-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CONFIRM_FINAL_APPOINTMENT_FOR_SOURCE_SIN...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U41-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CONFIRM_SOURCE_SINK_TEST.getTaskName(),
+          ...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U61-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ACTIVATION_OF_TELECONTROL_DEVICE.getTask...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: U72-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.DZE_FUNCTION_TEST.getTaskName(),
+          in.tele...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: S70-f80
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ASSIGN_IP_ASDU.getTaskName(),
+          in.telecon...
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: f16
+        name: Back to add additional information task?
+        conditions:
+          f67: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: S60-f1
+        name: null
+        conditions:
+          S60-f2: in.telecontrolDevice.wngwV2.connectionTestStatus.isSuccessful()
+      - id: S60-f8
+        name: Template find?
+        conditions:
+          S60-f16: in.templateId != null
+      - id: S60-f13
+        name: skipEmail?
+        conditions:
+          S60-f5: '!in.telecontrolDevice.skipEmailNotification'
+      - id: U01-f5
+        name: is not appointment date selected?
+        conditions:
+          U01-f8: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().noSelectedAppointment(in.telecontrolDeviceId)
+      - id: f27
+        name: Involved external?
+        conditions:
+          f29: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isExternalSecondaryTechnicianInvolved(in.telecontrolDeviceId)
+      - id: S50-f5
+        name: skipEmail?
+        conditions:
+          S50-f2: '!in.telecontrolDevice.skipEmailNotification'
+      - id: S50-f21
+        name: Template find?
+        conditions:
+          S50-f24: in.templateId != null
+      - id: f43
+        name: Common date found?
+        conditions:
+          f55: de.eon.kfwg.core.service.Wngw2AppointmentFindingSourceSinkTestService.getInstance().choosingAppointmentDateSelected(in.telecontrolDeviceId)
+      - id: f46
+        name: Confirm?
+        conditions:
+          f34: de.eon.kfwg.core.service.Wngw2AppointmentFindingSourceSinkTestService.getInstance().confirmedFinalDateAppointmentSelected(in.telecontrolDeviceId)
+          f49: de.eon.kfwg.core.service.Wngw2AppointmentFindingSourceSinkTestService.getInstance().noCommonAppointmentDateFound(in.telecontrolDeviceId)
+      - id: f56
+        name: isSuccessfulSourceSinkTest?
+        conditions:
+          f40: in.telecontrolDevice.sourceSinkTestData.sourceSinkTestResult.isSuccessful()
+      - id: f61
+        name: isDefinedDeliveryAddress?
+        conditions:
+          f35: '!de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isWngwDefinedDeliveryAddress(in.telecontrolDeviceId)'
+      - id: f64
+        name: DZE Functional test ?
+        conditions:
+          f38: de.eon.kfwg.core.service.Wngw2Service.get().isDzeFunctionalTestTaskRequired(in.telecontrolDeviceId)
+      - id: f74
+        name: Skip Email ?
+        conditions:
+          f77: '!Boolean.valueOf(ivy.var.de_eon_kfwg_core_features_letters_sendWngw2)'
+      - id: S70-f83
+        name: null
+        conditions:
+          S70-f1: in.connectTargetStockFound
+          S70-f86: ''
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.operationalSystemControlRole
+      - in.regionalPlanerRole
+      - in.stAreaSecondaryTechnicianRole
+  - name: CreateTelecontrolDeviceWngwV2
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Business Processes/CreateTelecontrolDeviceWngwV2.p.json
+    dataClass: de.eon.kfwg.CreateTelecontrolDeviceWngwV2Data
+    taskCount: 18
+    transitionCount: 15
+    tasks:
+      - id: U30-f4
+        name: Waiting Firewall Request
+        dialog: de.eon.kfwg.FirewallWaitingFeedback:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ORDER_FIREWALL_CHANGE.getTaskName(),
+          in....
+        responsibleRole: COMMUNICATIONS_ENGINEERING
+      - id: U50-f12
+        name: Installation in control system
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.INSTALLATION_IN_CONTROL_SYSTEM.getTaskNa...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U60-f12
+        name: Build telecontrol device & connection test
+        dialog: de.eon.kfwg.WaitingFeedback:start(String)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.BUILD_TELECONTROL_DEVICE_AND_CONNECTION_...
+        responsibleRole: KFWG_ADMIN
+      - id: U70-f4
+        name: Additional Task
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskAddAdditionalInformation(in.telecontrolDeviceId,
+          in.isNewAdditionTask)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: U90-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.GENERATE_SIGNAL_LIST.getTaskName(),
+          in.t...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: U00-f3
+        name: Configure updated technical place
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CONFIGURATE_UPDATE_TECHNICAL_PLACE.getTa...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U10-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.PARAMETRIZATION_AND_CONNECTION_TEST.getT...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: U20-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.DEFINE_DELIVERY_ADDRESS.getTaskName(),
+          i...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.regionalPlanerRole)
+      - id: U31-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.SEND_DEVICE_TO_CUSTOMER.getTaskName(),
+          i...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: U51-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildNameTaskConfirmCustomerConnectionTest(in.telecontrolDeviceId,
+          in.isConnection...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U71-f4
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.SUGGEST_POSSIBLE_SOURCE_SINK_TEST_DATES....
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U91-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CHOOSE_POSIBLE_SOURCE_SINK_TEST_DATES.ge...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U01-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CHOOSE_POSIBLE_SOURCE_SINK_TEST_DATES.ge...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.stAreaSecondaryTechnicianRole)
+      - id: U21-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CONFIRM_FINAL_APPOINTMENT_FOR_SOURCE_SIN...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U41-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.CONFIRM_SOURCE_SINK_TEST.getTaskName(),
+          ...
+        responsibleRole: CENTRAL_CONTROL_ENGINEERING
+      - id: U61-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ACTIVATION_OF_TELECONTROL_DEVICE.getTask...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: U72-f3
+        name: WngwV2Request
+        dialog: de.eon.kfwg.WngwV2Request:start(String,Boolean,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.DZE_FUNCTION_TEST.getTaskName(),
+          in.tele...
+        responsibleRole: ROLE_FROM_ATTRIBUTE(in.operationalSystemControlRole)
+      - id: S70-f80
+        name: Task for resume / IP/ASDU assign
+        dialog: de.eon.kfwg.ResumeIPAssign:start()
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName(de.eon.kfwg.core.enums.Task.ASSIGN_IP_ASDU.getTaskName(),
+          in.telecon...
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: f16
+        name: Back to add additional information task?
+        conditions:
+          f67: de.eon.kfwg.core.enums.Action.PROCEED.equals(in.#action)
+      - id: S60-f1
+        name: null
+        conditions:
+          S60-f2: in.telecontrolDevice.wngwV2.connectionTestStatus.isSuccessful()
+      - id: S60-f8
+        name: Template find?
+        conditions:
+          S60-f16: in.templateId != null
+      - id: S60-f13
+        name: skipEmail?
+        conditions:
+          S60-f5: '!in.telecontrolDevice.skipEmailNotification'
+      - id: U01-f5
+        name: is not appointment date selected?
+        conditions:
+          U01-f8: de.eon.kfwg.core.service.AppointmentFindingSourceSinkTestService.getInstance().noSelectedAppointment(in.telecontrolDeviceId)
+      - id: f27
+        name: Involved external?
+        conditions:
+          f29: de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isExternalSecondaryTechnicianInvolved(in.telecontrolDeviceId)
+      - id: S50-f5
+        name: skipEmail?
+        conditions:
+          S50-f2: '!in.telecontrolDevice.skipEmailNotification'
+      - id: S50-f21
+        name: Template find?
+        conditions:
+          S50-f24: in.templateId != null
+      - id: f43
+        name: Common date found?
+        conditions:
+          f55: de.eon.kfwg.core.service.Wngw2AppointmentFindingSourceSinkTestService.getInstance().choosingAppointmentDateSelected(in.telecontrolDeviceId)
+      - id: f46
+        name: Confirm?
+        conditions:
+          f34: de.eon.kfwg.core.service.Wngw2AppointmentFindingSourceSinkTestService.getInstance().confirmedFinalDateAppointmentSelected(in.telecontrolDeviceId)
+          f49: de.eon.kfwg.core.service.Wngw2AppointmentFindingSourceSinkTestService.getInstance().noCommonAppointmentDateFound(in.telecontrolDeviceId)
+      - id: f56
+        name: isSuccessfulSourceSinkTest?
+        conditions:
+          f40: in.telecontrolDevice.sourceSinkTestData.sourceSinkTestResult.isSuccessful()
+      - id: f61
+        name: isDefinedDeliveryAddress?
+        conditions:
+          f35: '!de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isWngwDefinedDeliveryAddress(in.telecontrolDeviceId)'
+      - id: f64
+        name: DZE Functional test ?
+        conditions:
+          f38: de.eon.kfwg.core.service.Wngw2Service.get().isDzeFunctionalTestTaskRequired(in.telecontrolDeviceId)
+      - id: f74
+        name: Skip Email ?
+        conditions:
+          f77: '!Boolean.valueOf(ivy.var.de_eon_kfwg_core_features_letters_sendWngw2)'
+      - id: S70-f83
+        name: null
+        conditions:
+          S70-f1: in.connectTargetStockFound
+          S70-f86: ''
+    roles:
+      - CENTRAL_CONTROL_ENGINEERING
+      - COMMUNICATIONS_ENGINEERING
+      - KFWG_ADMIN
+      - in.operationalSystemControlRole
+      - in.regionalPlanerRole
+      - in.stAreaSecondaryTechnicianRole
+  - name: DzeFunctionalTestReminderMail
+    path: eon-kfwg-core/processes/Functional Processes/DzeFunctionalTestReminderMail.p.json
+    dataClass: de.eon.kfwg.DzeFunctionalTestReminderMailData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f7
+        name: mailIndex < mails.size
+        conditions:
+          f6: in.mailIndex < in.mails.size()
+    roles: []
+  - name: DzeFunctionalTestReminderMail
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/DzeFunctionalTestReminderMail.p.json
+    dataClass: de.eon.kfwg.DzeFunctionalTestReminderMailData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f7
+        name: mailIndex < mails.size
+        conditions:
+          f6: in.mailIndex < in.mails.size()
+    roles: []
+  - name: EIOTService
+    path: eon-kfwg-core/processes/Functional Processes/EIOTService.p.json
+    dataClass: de.eon.kfwg.EIOTServiceData
+    taskCount: 0
+    transitionCount: 3
+    tasks: []
+    transitions:
+      - id: f0
+        name: BearerToken ready?
+        conditions:
+          f26: org.apache.commons.lang.StringUtils.isNotEmpty(in.bearerToken)
+      - id: f22
+        name: index < sizes
+        conditions:
+          f40: in.index < in.telecontrolDeviceIds.size()
+      - id: f5
+        name: BearerToken ready?
+        conditions:
+          f11: org.apache.commons.lang.StringUtils.isNotEmpty(in.bearerToken)
+    roles: []
+  - name: EIOTService
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/EIOTService.p.json
+    dataClass: de.eon.kfwg.EIOTServiceData
+    taskCount: 0
+    transitionCount: 3
+    tasks: []
+    transitions:
+      - id: f0
+        name: BearerToken ready?
+        conditions:
+          f26: org.apache.commons.lang.StringUtils.isNotEmpty(in.bearerToken)
+      - id: f22
+        name: index < sizes
+        conditions:
+          f40: in.index < in.telecontrolDeviceIds.size()
+      - id: f5
+        name: BearerToken ready?
+        conditions:
+          f11: org.apache.commons.lang.StringUtils.isNotEmpty(in.bearerToken)
+    roles: []
+  - name: GetDocumentListWithType
+    path: eon-kfwg-core/processes/Functional Processes/GetDocumentListWithType.p.json
+    dataClass: de.eon.kfwg.GetDocumentListWithTypeData
+    taskCount: 0
+    transitionCount: 2
+    tasks: []
+    transitions:
+      - id: f12
+        name: null
+        conditions:
+          f9: in.error.errorCode == 0
+      - id: f2
+        name: null
+        conditions:
+          f8: '!ivy.var.sharepoint_use_online.equalsIgnoreCase("true")'
+    roles: []
+  - name: GetDocumentListWithType
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/GetDocumentListWithType.p.json
+    dataClass: de.eon.kfwg.GetDocumentListWithTypeData
+    taskCount: 0
+    transitionCount: 2
+    tasks: []
+    transitions:
+      - id: f12
+        name: null
+        conditions:
+          f9: in.error.errorCode == 0
+      - id: f2
+        name: null
+        conditions:
+          f8: '!ivy.var.sharepoint_use_online.equalsIgnoreCase("true")'
+    roles: []
+  - name: IvyDocument
+    path: eon-kfwg-core/processes/Functional Processes/IvyDocument.p.json
+    dataClass: de.eon.kfwg.IvyDocumentData
+    taskCount: 0
+    transitionCount: 10
+    tasks: []
+    transitions:
+      - id: f17
+        name: not error ?
+        conditions:
+          f28: in.deliveryNoteFile.exists()
+      - id: f18
+        name: not error ?
+        conditions:
+          f31: in.shippingFormFile.exists()
+      - id: f38
+        name: null
+        conditions:
+          f27: 'true'
+      - id: f26
+        name: null
+        conditions:
+          f29: 'true'
+      - id: f45
+        name: not error ?
+        conditions:
+          f58: in.file.exists()
+      - id: f53
+        name: null
+        conditions:
+          f47: 'true'
+      - id: f85
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f87: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f90
+        name: Continue ?
+        conditions:
+          f55: in.loopCounter == in.sharepointListItems.size()
+      - id: f92
+        name: Should loop ?
+        conditions:
+          f54: in.loopCounter < in.sharepointListItems.size()
+      - id: f98
+        name: Error ?
+        conditions:
+          f100: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+    roles: []
+  - name: IvyDocument
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/IvyDocument.p.json
+    dataClass: de.eon.kfwg.IvyDocumentData
+    taskCount: 0
+    transitionCount: 10
+    tasks: []
+    transitions:
+      - id: f17
+        name: not error ?
+        conditions:
+          f28: in.deliveryNoteFile.exists()
+      - id: f18
+        name: not error ?
+        conditions:
+          f31: in.shippingFormFile.exists()
+      - id: f38
+        name: null
+        conditions:
+          f27: 'true'
+      - id: f26
+        name: null
+        conditions:
+          f29: 'true'
+      - id: f45
+        name: not error ?
+        conditions:
+          f58: in.file.exists()
+      - id: f53
+        name: null
+        conditions:
+          f47: 'true'
+      - id: f85
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f87: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+      - id: f90
+        name: Continue ?
+        conditions:
+          f55: in.loopCounter == in.sharepointListItems.size()
+      - id: f92
+        name: Should loop ?
+        conditions:
+          f54: in.loopCounter < in.sharepointListItems.size()
+      - id: f98
+        name: Error ?
+        conditions:
+          f100: in.sharePointException != null &&  in.sharePointException.errorCode != 0
+    roles: []
+  - name: Migration
+    path: eon-kfwg-core/processes/Migration Processes/Migration.p.json
+    dataClass: de.eon.kfwg.MigrationData
+    taskCount: 0
+    transitionCount: 2
+    tasks: []
+    transitions:
+      - id: f9
+        name: null
+        conditions:
+          f12: in.counter < in.importDevices.size()
+      - id: f37
+        name: null
+        conditions:
+          f40: in.counter < in.importDevices.size()
+    roles: []
+  - name: Migration
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Migration Processes/Migration.p.json
+    dataClass: de.eon.kfwg.MigrationData
+    taskCount: 0
+    transitionCount: 2
+    tasks: []
+    transitions:
+      - id: f9
+        name: null
+        conditions:
+          f12: in.counter < in.importDevices.size()
+      - id: f37
+        name: null
+        conditions:
+          f40: in.counter < in.importDevices.size()
+    roles: []
+  - name: OverviewASDU
+    path: eon-kfwg-core/processes/Start Processes/OverviewASDU.p.json
+    dataClass: de.eon.kfwg.OverviewASDUData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f2
+        name: Close?
+        conditions:
+          f9: in.close
+    roles: []
+  - name: OverviewASDU
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Start Processes/OverviewASDU.p.json
+    dataClass: de.eon.kfwg.OverviewASDUData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f2
+        name: Close?
+        conditions:
+          f9: in.close
+    roles: []
+  - name: OverviewRouterInformation
+    path: eon-kfwg-core/processes/Start Processes/OverviewRouterInformation.p.json
+    dataClass: de.eon.kfwg.OverviewRouterInformationData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f6
+        name: isClose?
+        conditions:
+          f2: in.close
+    roles: []
+  - name: OverviewRouterInformation
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Start Processes/OverviewRouterInformation.p.json
+    dataClass: de.eon.kfwg.OverviewRouterInformationData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f6
+        name: isClose?
+        conditions:
+          f2: in.close
+    roles: []
+  - name: SecondaryTechnicianNotificationEmail
+    path: eon-kfwg-core/processes/Functional Processes/SecondaryTechnicianNotificationEmail.p.json
+    dataClass: de.eon.kfwg.IndeterminateSecondaryTechnicianNotificationEmailData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f13
+        name: STArea mailbox detected
+        conditions:
+          f10: org.apache.commons.lang.StringUtils.isNotEmpty(in.mail.to)
+    roles: []
+  - name: SecondaryTechnicianNotificationEmail
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/SecondaryTechnicianNotificationEmail.p.json
+    dataClass: de.eon.kfwg.IndeterminateSecondaryTechnicianNotificationEmailData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f13
+        name: STArea mailbox detected
+        conditions:
+          f10: org.apache.commons.lang.StringUtils.isNotEmpty(in.mail.to)
+    roles: []
+  - name: TelecontrolDeviceRequestProcess
+    path: eon-kfwg-core/src_hd/de/eon/kfwg/TelecontrolDeviceRequest/TelecontrolDeviceRequestProcess.p.json
+    dataClass: de.eon.kfwg.TelecontrolDeviceRequest.TelecontrolDeviceRequestData
+    taskCount: 0
+    transitionCount: 13
+    tasks: []
+    transitions:
+      - id: f96
+        name: Valid proceed?
+        conditions:
+          f112: in.bean.isValid
+      - id: f92
+        name: init device?
+        conditions:
+          f18: org.apache.commons.lang.StringUtils.isEmpty(in.bean.telecontrolDevice.#id)
+      - id: f119
+        name: isDetailView?
+        conditions:
+          f15: '!in.bean.isDetailView || !in.bean.isFromSearchPage'
+      - id: f38
+        name: has Sharepoint Exception?
+        conditions:
+          f71: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f43: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f8
+        name: Keep device in stock?
+        conditions:
+          f13: >-
+            de.eon.kfwg.core.enums.TelecontrolDeviceStatus.ADD_ADDITIONAL_INFO.equals(in.bean.telecontrolDevice.status)
+            && de.eon.kfwg.core.enums.Destination.ON_STOCK.equals(in.bean.telecontrolDevice.destination)
+      - id: f56
+        name: is DigiONS device Type ?
+        conditions:
+          f58: >-
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS.equals(in.bean.telecontroldevice.#smallTelecontrolDeviceType)
+            ||
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.RETROFIT.equals(in.bean.telecontroldevice.#smallTelecontrolDeviceType)
+      - id: f106
+        name: need comfirm?
+        conditions:
+          f20: in.bean.showProceedConfirmationDialog()
+      - id: f61
+        name: Sync eIOT?
+        conditions:
+          f85: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.CONFIGURE_UPDATED_TECHNICAL_PLACE.equals(in.bean.telecontrolDevice.status)
+      - id: f64
+        name: Success?
+        conditions:
+          f105: org.apache.commons.lang.StringUtils.isEmpty(in.bean.eIOTResponse.error)
+      - id: f5
+        name: delegate task?
+        conditions:
+          f22: in.bean.isDigiONSAdditionalTaskPlanerChanged()
+      - id: f59
+        name: delegate task?
+        conditions:
+          f99: in.bean.isDigiONSAdditionalTaskPlanerChanged()
+      - id: f51
+        name: delegate task?
+        conditions:
+          f116: in.bean.isDigiONSAdditionalTaskPlanerChanged()
+    roles: []
+  - name: TelecontrolDeviceRequestProcess
+    path: kleinfernwirktechnik/eon-kfwg-core/src_hd/de/eon/kfwg/TelecontrolDeviceRequest/TelecontrolDeviceRequestProcess.p.json
+    dataClass: de.eon.kfwg.TelecontrolDeviceRequest.TelecontrolDeviceRequestData
+    taskCount: 0
+    transitionCount: 13
+    tasks: []
+    transitions:
+      - id: f96
+        name: Valid proceed?
+        conditions:
+          f112: in.bean.isValid
+      - id: f92
+        name: init device?
+        conditions:
+          f18: org.apache.commons.lang.StringUtils.isEmpty(in.bean.telecontrolDevice.#id)
+      - id: f119
+        name: isDetailView?
+        conditions:
+          f15: '!in.bean.isDetailView || !in.bean.isFromSearchPage'
+      - id: f38
+        name: has Sharepoint Exception?
+        conditions:
+          f71: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f43: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f8
+        name: Keep device in stock?
+        conditions:
+          f13: >-
+            de.eon.kfwg.core.enums.TelecontrolDeviceStatus.ADD_ADDITIONAL_INFO.equals(in.bean.telecontrolDevice.status)
+            && de.eon.kfwg.core.enums.Destination.ON_STOCK.equals(in.bean.telecontrolDevice.destination)
+      - id: f56
+        name: is DigiONS device Type ?
+        conditions:
+          f58: >-
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS.equals(in.bean.telecontroldevice.#smallTelecontrolDeviceType)
+            ||
+            de.eon.kfwg.core.enums.TelecontrolDeviceType.RETROFIT.equals(in.bean.telecontroldevice.#smallTelecontrolDeviceType)
+      - id: f106
+        name: need comfirm?
+        conditions:
+          f20: in.bean.showProceedConfirmationDialog()
+      - id: f61
+        name: Sync eIOT?
+        conditions:
+          f85: de.eon.kfwg.core.enums.TelecontrolDeviceStatus.CONFIGURE_UPDATED_TECHNICAL_PLACE.equals(in.bean.telecontrolDevice.status)
+      - id: f64
+        name: Success?
+        conditions:
+          f105: org.apache.commons.lang.StringUtils.isEmpty(in.bean.eIOTResponse.error)
+      - id: f5
+        name: delegate task?
+        conditions:
+          f22: in.bean.isDigiONSAdditionalTaskPlanerChanged()
+      - id: f59
+        name: delegate task?
+        conditions:
+          f99: in.bean.isDigiONSAdditionalTaskPlanerChanged()
+      - id: f51
+        name: delegate task?
+        conditions:
+          f116: in.bean.isDigiONSAdditionalTaskPlanerChanged()
+    roles: []
+  - name: TemplateMail
+    path: eon-kfwg-core/processes/Functional Processes/TemplateMail.p.json
+    dataClass: de.eon.kfwg.TemplateMailData
+    taskCount: 1
+    transitionCount: 3
+    tasks:
+      - id: f39
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.EmailTemplateRetryTask:start(String,de.eon.kfwg.core.enums.EmailTemplateId,java.util.List<de.eon.kfwg.core.enums.ReplacementMarker>,java.util.List<de.eon.kfwg.core.dto.ReplacementMarkerEmailDTO>,java.util.List<de.eon.kfwg.core.dto.ReplacementMarkerEmailDTO>,java.util.List<de.eon.kfwg.core.enums.ReplacementMarker>)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildEMailRetryTaskName(in.telecontrolDeviceId, in.templateId)%>
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: f9
+        name: action?
+        conditions:
+          f8: de.eon.kfwg.core.enums.EmailTemplateRetryAction.RETRY.equals(in.action)
+          f11: de.eon.kfwg.core.enums.EmailTemplateRetryAction.SKIP_RESEND.equals(in.action)
+          f0: de.eon.kfwg.core.enums.EmailTemplateRetryAction.SEND_EMAIL_TO_DETECTED_RECIPIENTS.equals(in.action)
+      - id: f6
+        name: null
+        conditions:
+          f4: in.mailDTO.isEmailValid()
+          f12: in.retriable == true
+          f16: in.retriable == false
+      - id: f18
+        name: skip?
+        conditions:
+          f21: in.mailDTO.skip
+    roles:
+      - KFWG_ADMIN
+  - name: TemplateMail
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/TemplateMail.p.json
+    dataClass: de.eon.kfwg.TemplateMailData
+    taskCount: 1
+    transitionCount: 3
+    tasks:
+      - id: f39
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.EmailTemplateRetryTask:start(String,de.eon.kfwg.core.enums.EmailTemplateId,java.util.List<de.eon.kfwg.core.enums.ReplacementMarker>,java.util.List<de.eon.kfwg.core.dto.ReplacementMarkerEmailDTO>,java.util.List<de.eon.kfwg.core.dto.ReplacementMarkerEmailDTO>,java.util.List<de.eon.kfwg.core.enums.ReplacementMarker>)
+        taskNameExpr: <%=de.eon.kfwg.core.utils.TaskUtil.buildEMailRetryTaskName(in.telecontrolDeviceId, in.templateId)%>
+        responsibleRole: KFWG_ADMIN
+    transitions:
+      - id: f9
+        name: action?
+        conditions:
+          f8: de.eon.kfwg.core.enums.EmailTemplateRetryAction.RETRY.equals(in.action)
+          f11: de.eon.kfwg.core.enums.EmailTemplateRetryAction.SKIP_RESEND.equals(in.action)
+          f0: de.eon.kfwg.core.enums.EmailTemplateRetryAction.SEND_EMAIL_TO_DETECTED_RECIPIENTS.equals(in.action)
+      - id: f6
+        name: null
+        conditions:
+          f4: in.mailDTO.isEmailValid()
+          f12: in.retriable == true
+          f16: in.retriable == false
+      - id: f18
+        name: skip?
+        conditions:
+          f21: in.mailDTO.skip
+    roles:
+      - KFWG_ADMIN
+  - name: TransferToEAM
+    path: eon-kfwg-core/processes/Functional Processes/TransferToEAM.p.json
+    dataClass: de.eon.kfwg.TransferToEAMData
+    taskCount: 2
+    transitionCount: 14
+    tasks:
+      - id: f23
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.eam.TransferToEAMRetryTask:start(de.eon.kfwg.core.rest.eam.response.EAMResponse)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/TransferToEAMRetryTask/name",
+          in.telecontrolD...
+        responsibleRole: KFWG_ADMIN
+      - id: f69
+        name: Planner Task
+        dialog: de.eon.kfwg.eam.TransferToEAMValidationFailed:start(String,List<String>,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/plannerVerifyEAMData",
+          in.telecontrolDeviceId)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findRegionalPlanerRole(in.telecontrolDeviceId))
+    transitions:
+      - id: S10-f30
+        name: Loop
+        conditions:
+          S10-f36: in.index < in.equipmentRequestBodies.size()
+      - id: S10-f32
+        name: error
+        conditions: null
+      - id: S10-f51
+        name: null
+        conditions:
+          S10-f54: in.index < in.equipmentRequestBodies.size()
+      - id: S10-f1
+        name: null
+        conditions:
+          S10-f5: in.response.isErrorResponse()
+      - id: f15
+        name: null
+        conditions:
+          f52: in.eamResult == de.eon.kfwg.core.enums.EAMResult.CONTINUE_LOOP
+          f19: in.eamResult == de.eon.kfwg.core.enums.EAMResult.SUCCESSFUL
+          f25: in.eamResult == de.eon.kfwg.core.enums.EAMResult.CREATE_ADMIN_TASK
+      - id: f14
+        name:
+          - skip Transfer
+          - To EAM?
+        conditions:
+          f56: de.eon.kfwg.core.enums.Action.CANCEL.equals(in.action)
+      - id: f8
+        name: isError?
+        conditions:
+          f41: in.response.isErrorResponse()
+      - id: f26
+        name: null
+        conditions:
+          f33: in.response.isErrorResponse()
+          f18: in.validationMessages.isEmpty()
+      - id: f37
+        name: created Equip?
+        conditions:
+          f35: org.apache.commons.collections.CollectionUtils.isNotEmpty(in.equipmentDTOs)
+      - id: f28
+        name:
+          - turn off
+          - EAM Transfer?
+        conditions:
+          f32: Boolean.valueOf(ivy.var.de_eon_kfwg_core_eam_skipTransfer)
+      - id: f57
+        name: null
+        conditions:
+          f29: in.isBulkMode
+      - id: f42
+        name: null
+        conditions:
+          f12: in.response.isErrorResponse()
+          f0: in.validationMessages.isEmpty()
+      - id: f72
+        name: null
+        conditions:
+          f71: in.action == de.eon.kfwg.core.enums.Action.RETRY
+      - id: f80
+        name: isError?
+        conditions:
+          f83: in.response.isErrorResponse()
+    roles:
+      - KFWG_ADMIN
+      - de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findRegionalPlanerRole(in.telecontrolDeviceId)
+  - name: TransferToEAM
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Functional Processes/TransferToEAM.p.json
+    dataClass: de.eon.kfwg.TransferToEAMData
+    taskCount: 2
+    transitionCount: 14
+    tasks:
+      - id: f23
+        name: Admin Retry Task
+        dialog: de.eon.kfwg.eam.TransferToEAMRetryTask:start(de.eon.kfwg.core.rest.eam.response.EAMResponse)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/TransferToEAMRetryTask/name",
+          in.telecontrolD...
+        responsibleRole: KFWG_ADMIN
+      - id: f69
+        name: Planner Task
+        dialog: de.eon.kfwg.eam.TransferToEAMValidationFailed:start(String,List<String>,Boolean)
+        taskNameExpr: >-
+          <%=de.eon.kfwg.core.utils.TaskUtil.buildTaskName("/de.eon.kfwg/TaskName/plannerVerifyEAMData",
+          in.telecontrolDeviceId)%>
+        responsibleRole: ROLE_FROM_ATTRIBUTE(de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findRegionalPlanerRole(in.telecontrolDeviceId))
+    transitions:
+      - id: S10-f30
+        name: Loop
+        conditions:
+          S10-f36: in.index < in.equipmentRequestBodies.size()
+      - id: S10-f32
+        name: error
+        conditions: null
+      - id: S10-f51
+        name: null
+        conditions:
+          S10-f54: in.index < in.equipmentRequestBodies.size()
+      - id: S10-f1
+        name: null
+        conditions:
+          S10-f5: in.response.isErrorResponse()
+      - id: f15
+        name: null
+        conditions:
+          f52: in.eamResult == de.eon.kfwg.core.enums.EAMResult.CONTINUE_LOOP
+          f19: in.eamResult == de.eon.kfwg.core.enums.EAMResult.SUCCESSFUL
+          f25: in.eamResult == de.eon.kfwg.core.enums.EAMResult.CREATE_ADMIN_TASK
+      - id: f14
+        name:
+          - skip Transfer
+          - To EAM?
+        conditions:
+          f56: de.eon.kfwg.core.enums.Action.CANCEL.equals(in.action)
+      - id: f8
+        name: isError?
+        conditions:
+          f41: in.response.isErrorResponse()
+      - id: f26
+        name: null
+        conditions:
+          f33: in.response.isErrorResponse()
+          f18: in.validationMessages.isEmpty()
+      - id: f37
+        name: created Equip?
+        conditions:
+          f35: org.apache.commons.collections.CollectionUtils.isNotEmpty(in.equipmentDTOs)
+      - id: f28
+        name:
+          - turn off
+          - EAM Transfer?
+        conditions:
+          f32: Boolean.valueOf(ivy.var.de_eon_kfwg_core_eam_skipTransfer)
+      - id: f57
+        name: null
+        conditions:
+          f29: in.isBulkMode
+      - id: f42
+        name: null
+        conditions:
+          f12: in.response.isErrorResponse()
+          f0: in.validationMessages.isEmpty()
+      - id: f72
+        name: null
+        conditions:
+          f71: in.action == de.eon.kfwg.core.enums.Action.RETRY
+      - id: f80
+        name: isError?
+        conditions:
+          f83: in.response.isErrorResponse()
+    roles:
+      - KFWG_ADMIN
+      - de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findRegionalPlanerRole(in.telecontrolDeviceId)
+  - name: TriggerEAMBulkTransfer
+    path: eon-kfwg-core/processes/Start Processes/TriggerEAMBulkTransfer.p.json
+    dataClass: de.eon.kfwg.TriggerEAMBulkTransferData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f8
+        name: null
+        conditions:
+          f21: in.counter < in.devices.size()
+    roles: []
+  - name: TriggerEAMBulkTransfer
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Start Processes/TriggerEAMBulkTransfer.p.json
+    dataClass: de.eon.kfwg.TriggerEAMBulkTransferData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f8
+        name: null
+        conditions:
+          f21: in.counter < in.devices.size()
+    roles: []
+  - name: UploadRouterDataProcess
+    path: eon-kfwg-core/src_hd/de/eon/kfwg/UploadRouterData/UploadRouterDataProcess.p.json
+    dataClass: de.eon.kfwg.UploadRouterData.UploadRouterDataData
+    taskCount: 0
+    transitionCount: 4
+    tasks: []
+    transitions:
+      - id: S10-fl35
+        name: Router WNGW Light not empty?
+        conditions:
+          S10-fl38: org.apache.commons.collections4.CollectionUtils.isNotEmpty(in.bean.triggerCreateWngwLight)
+      - id: S10-fv35
+        name: Router WNGW 2.0 not empty?
+        conditions:
+          S10-fv38: org.apache.commons.collections4.CollectionUtils.isNotEmpty(in.bean.triggerCreateWngwV2)
+      - id: S10-f35
+        name: Router Digions not empty?
+        conditions:
+          S10-f38: org.apache.commons.collections4.CollectionUtils.isNotEmpty(in.bean.triggerCreateDigiOns)
+      - id: S10-f2
+        name: Assign Map not empty?
+        conditions:
+          S10-f3: '!in.bean.assignRouterMap.isEmpty()'
+    roles: []
+  - name: UploadRouterDataProcess
+    path: kleinfernwirktechnik/eon-kfwg-core/src_hd/de/eon/kfwg/UploadRouterData/UploadRouterDataProcess.p.json
+    dataClass: de.eon.kfwg.UploadRouterData.UploadRouterDataData
+    taskCount: 0
+    transitionCount: 4
+    tasks: []
+    transitions:
+      - id: S10-fl35
+        name: Router WNGW Light not empty?
+        conditions:
+          S10-fl38: org.apache.commons.collections4.CollectionUtils.isNotEmpty(in.bean.triggerCreateWngwLight)
+      - id: S10-fv35
+        name: Router WNGW 2.0 not empty?
+        conditions:
+          S10-fv38: org.apache.commons.collections4.CollectionUtils.isNotEmpty(in.bean.triggerCreateWngwV2)
+      - id: S10-f35
+        name: Router Digions not empty?
+        conditions:
+          S10-f38: org.apache.commons.collections4.CollectionUtils.isNotEmpty(in.bean.triggerCreateDigiOns)
+      - id: S10-f2
+        name: Assign Map not empty?
+        conditions:
+          S10-f3: '!in.bean.assignRouterMap.isEmpty()'
+    roles: []
+  - name: WngwAppointmentOverviewSourceSinkTest
+    path: eon-kfwg-core/processes/Start Processes/WngwAppointmentOverviewSourceSinkTest.p.json
+    dataClass: de.eon.kfwg.WngwAppointmentOverviewSourceSinkTestData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f10
+        name: null
+        conditions:
+          f2: in.close
+    roles: []
+  - name: WngwAppointmentOverviewSourceSinkTest
+    path: kleinfernwirktechnik/eon-kfwg-core/processes/Start Processes/WngwAppointmentOverviewSourceSinkTest.p.json
+    dataClass: de.eon.kfwg.WngwAppointmentOverviewSourceSinkTestData
+    taskCount: 0
+    transitionCount: 1
+    tasks: []
+    transitions:
+      - id: f10
+        name: null
+        conditions:
+          f2: in.close
+    roles: []
+  - name: WngwLightRequestProcess
+    path: eon-kfwg-core/src_hd/de/eon/kfwg/WngwLightRequest/WngwLightRequestProcess.p.json
+    dataClass: de.eon.kfwg.WngwLightRequest.WngwLightRequestData
+    taskCount: 0
+    transitionCount: 6
+    tasks: []
+    transitions:
+      - id: f14
+        name: isValid?
+        conditions:
+          f55: in.bean.isValid == true
+          f16: in.bean.isValid == false
+      - id: f38
+        name: has Sharepoint Exception?
+        conditions:
+          f71: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f43: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f47
+        name: null
+        conditions:
+          f46: in.bean.needToLoadDocuments()
+      - id: f119
+        name: isDetailView?
+        conditions:
+          f50: '!in.bean.isDetailView || !in.bean.isFromSearchPage'
+      - id: f106
+        name: need comfirm?
+        conditions:
+          f56: in.bean.showProceedConfirmationDialog()
+    roles: []
+  - name: WngwLightRequestProcess
+    path: kleinfernwirktechnik/eon-kfwg-core/src_hd/de/eon/kfwg/WngwLightRequest/WngwLightRequestProcess.p.json
+    dataClass: de.eon.kfwg.WngwLightRequest.WngwLightRequestData
+    taskCount: 0
+    transitionCount: 6
+    tasks: []
+    transitions:
+      - id: f14
+        name: isValid?
+        conditions:
+          f55: in.bean.isValid == true
+          f16: in.bean.isValid == false
+      - id: f38
+        name: has Sharepoint Exception?
+        conditions:
+          f71: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f43: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f47
+        name: null
+        conditions:
+          f46: in.bean.needToLoadDocuments()
+      - id: f119
+        name: isDetailView?
+        conditions:
+          f50: '!in.bean.isDetailView || !in.bean.isFromSearchPage'
+      - id: f106
+        name: need comfirm?
+        conditions:
+          f56: in.bean.showProceedConfirmationDialog()
+    roles: []
+  - name: WngwV2RequestProcess
+    path: eon-kfwg-core/src_hd/de/eon/kfwg/WngwV2Request/WngwV2RequestProcess.p.json
+    dataClass: de.eon.kfwg.WngwV2Request.WngwV2RequestData
+    taskCount: 0
+    transitionCount: 6
+    tasks: []
+    transitions:
+      - id: f9
+        name: isValid?
+        conditions:
+          f12: in.bean.isValid == false
+          f40: in.bean.isValid == true
+      - id: f38
+        name: has Sharepoint Exception?
+        conditions:
+          f71: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f43: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f106
+        name: need comfirm?
+        conditions:
+          f41: in.bean.showProceedConfirmationDialog()
+      - id: f50
+        name: null
+        conditions:
+          f52: in.bean.needToLoadDocuments()
+      - id: f57
+        name: null
+        conditions:
+          f59: in.bean.isDetailView || in.bean.isFromSearchPage
+    roles: []
+  - name: WngwV2RequestProcess
+    path: kleinfernwirktechnik/eon-kfwg-core/src_hd/de/eon/kfwg/WngwV2Request/WngwV2RequestProcess.p.json
+    dataClass: de.eon.kfwg.WngwV2Request.WngwV2RequestData
+    taskCount: 0
+    transitionCount: 6
+    tasks: []
+    transitions:
+      - id: f9
+        name: isValid?
+        conditions:
+          f12: in.bean.isValid == false
+          f40: in.bean.isValid == true
+      - id: f38
+        name: has Sharepoint Exception?
+        conditions:
+          f71: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f39
+        name:
+          - has Sharepoint
+          - Exception?
+        conditions:
+          f43: in.bean.sharePointException != null &&  in.bean.sharePointException.errorCode != 0
+      - id: f106
+        name: need comfirm?
+        conditions:
+          f41: in.bean.showProceedConfirmationDialog()
+      - id: f50
+        name: null
+        conditions:
+          f52: in.bean.needToLoadDocuments()
+      - id: f57
+        name: null
+        conditions:
+          f59: in.bean.isDetailView || in.bean.isFromSearchPage
+    roles: []

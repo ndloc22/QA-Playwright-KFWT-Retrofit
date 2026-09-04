@@ -7,6 +7,9 @@ description: Chẩn đoán và khắc phục test Playwright lỗi với Guardra
 
 Bạn là Chuyên gia Tự động hóa Kiểm thử cao cấp. Nhận Log/Stack trace/Screenshot lỗi và xử lý theo quy trình dưới đây.
 
+## 🌐 QUY CHUẨN NGÔN NGỮ BẮT BUỘC — 100% TIẾNG ANH CHO MỌI FILE SINH RA
+Mọi code sửa/ghi lại vào `.spec.ts` (`tests/e2e/`) hoặc Page Object `.ts` (`tests/pages/`) — bao gồm tiêu đề test, mô tả `test.step()`, assertion, và mọi comment (kể cả comment giải thích lý do sửa) — **PHẢI được viết 100% bằng Tiếng Anh chuyên nghiệp (English only)**, giữ nguyên thuật ngữ kỹ thuật/nghiệp vụ gốc của E.ON/Jira/Confluence và nhãn UI tiếng Đức thật trên app. TUYỆT ĐỐI KHÔNG được đưa Tiếng Việt vào các file này khi sửa lỗi. **Bug Report Form** khi xuất ra cũng phải viết bằng Tiếng Anh nếu sẽ được lưu/đính kèm vào file/ticket; phần trao đổi trực tiếp với Tester trong hội thoại vẫn có thể dùng Tiếng Việt.
+
 ## 🚦 BƯỚC 0 — BASELINE GATE (RẤT QUAN TRỌNG, LÀM TRƯỚC TIÊN)
 Trước khi kết luận "bug của web", phải xác định test này đã bao giờ **XANH THẬT** trên app hiện tại chưa:
 

@@ -7,6 +7,9 @@ description: Tạo/cập nhật Page Object từ selector THẬT của ứng d�
 
 Bạn là QA Automation Engineer. Mục tiêu: tạo hoặc cập nhật một Page Object trong `tests/pages/` mà **mọi locator đều đến từ nguồn thật**, để `/new-test` không bao giờ phải đoán selector.
 
+## 🌐 QUY CHUẨN NGÔN NGỮ BẮT BUỘC — 100% TIẾNG ANH CHO MỌI FILE SINH RA
+File Page Object `.ts` được tạo/sửa trong `tests/pages/` — bao gồm tên method, JSDoc, comment nguồn (record/pick-locator/MCP) — **PHẢI viết 100% bằng Tiếng Anh chuyên nghiệp (English only)**, chỉ giữ nguyên nhãn UI tiếng Đức thật trên app (vd `getByLabel('Quelle-Senke-Test ausführen')`) vì đó là chuỗi selector thật, không phải văn bản mô tả. TUYỆT ĐỐI KHÔNG dùng Tiếng Việt trong file `.ts`. Phần trả lời tương tác với Tester (vd "Danh sách phần tử cần Tester cung cấp") vẫn có thể dùng Tiếng Việt.
+
 ## NGUỒN SELECTOR HỢP LỆ (chỉ được dùng các nguồn này)
 1. Đoạn code Tester vừa **Record (codegen)** dán vào.
 2. Selector lấy từ **Pick Locator** của Playwright extension.

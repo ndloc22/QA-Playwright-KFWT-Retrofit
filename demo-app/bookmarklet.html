@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚡ Sync Jira to Retrofit - 1-Click Chrome Bookmarklet</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #101726;
+      --border: #1f293d;
+      --primary: #00e5ff;
+      --primary-hover: #33ecff;
+      --success: #00e676;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 720px;
+      width: 100%;
+      padding: 36px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--primary);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    p.lead {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .action-box {
+      background: #090e1a;
+      border: 2px dashed #00e5ff88;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .drag-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+      color: #ffffff;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 8px 20px rgba(0, 180, 216, 0.35);
+      cursor: grab;
+      transition: all 0.2s;
+    }
+    .drag-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(0, 180, 216, 0.5);
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .step-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--primary);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .step-text {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .code-box {
+      position: relative;
+      background: #060911;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #a5b4fc;
+      overflow-x: auto;
+      max-height: 120px;
+      margin-top: 10px;
+      word-break: break-all;
+    }
+    .btn-copy {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="badge">E.ON KFWT RETROFIT QA WORKFLOW</span>
+    <h1>⚡ 1-Click Sync Jira to Retrofit</h1>
+    <p class="lead">
+      Kéo nút bấm bên dưới thả vào thanh dấu trang (Bookmarks Bar) trên Google Chrome của Sếp. Khi đang mở bất kỳ ticket Jira nào trên E.ON (ví dụ <code>KFWT-1161</code>), chỉ cần click nút này là nội dung ticket sẽ tự động lưu thẳng vào thư mục <code>docs/tickets/</code> trong dự án!
+    </p>
+
+    <div class="action-box">
+      <p style="color: var(--muted); font-size: 13px; margin-bottom: 14px;">👇 <b>KÉO VÀ THẢ NÚT NÀY VÀO THANH BOOKMARKS BAR CỦA TRÌNH DUYỆT</b> 👇</p>
+      <a class="drag-button" href="javascript:(async function() { const RETROFIT_API = 'http: const BOLT_API = 'http: function showToast(msg, isSuccess = true, subMsg = '') { const id = '__jira_retrofit_sync_toast'; let el = document.getElementById(id); if (el) el.remove(); el = document.createElement('div'); el.id = id; el.style.cssText = ` position: fixed; bottom: 24px; right: 24px; z-index: 999999; background: #0d1117; color: #f0f6fc; border: 1px solid ${isSuccess ? '#238636' : '#da3633'}; border-left: 5px solid ${isSuccess ? '#2ea043' : '#f85149'}; padding: 16px 20px; border-radius: 8px; box-shadow: 0 12px 28px rgba(0,0,0,0.45); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; max-width: 420px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); `; el.innerHTML = ` <div style="display: flex; align-items: flex-start; gap: 10px;"> <span style="font-size: 18px;">${isSuccess ? '⚡' : '⚠️'}</span> <div style="flex: 1;"> <strong style="color: ${isSuccess ? '#56d364' : '#ff7b72'}; font-size: 14px; display: block; margin-bottom: 4px;"> ${msg} </strong> ${subMsg ? `<div style="color: #8b949e; font-size: 12px;">${subMsg}</div>` : ''} </div> <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: #8b949e; cursor: pointer; font-size: 16px; padding: 0 4px;">×</button> </div> `; document.body.appendChild(el); setTimeout(() => { if (el && el.parentElement) el.remove(); }, 7000); } const match = window.location.pathname.match(/\/browse\/([A-Z0-9]+-\d+)/i) || document.title.match(/\[([A-Z0-9]+-\d+)\]/i); if (!match) { showToast('Không tìm thấy Jira Ticket Key!', false, 'Hãy chắc chắn bạn đang mở trang Jira Ticket (ví dụ /browse/KFWT-1161)'); return; } const ticketKey = match[1].toUpperCase(); showToast(`Đang trích xuất dữ liệu ${ticketKey}...`, true, 'Đang đọc từ Jira REST API & DOM'); let data = { key: ticketKey, summary: '', description: '', acceptanceCriteria: '', issueType: 'Story', status: 'To Do', priority: 'Medium', assignee: 'Unassigned', reporter: 'N/A', sprint: '', storyPoints: null, url: window.location.href, labels: [], components: [] }; let restSuccess = false; try { const res = await fetch(`/rest/api/2/issue/${ticketKey}?expand=renderedFields,names`, { credentials: 'include', headers: { 'Accept': 'application/json' } }); if (res.ok) { const issue = await res.json(); const fields = issue.fields || {}; const rendered = issue.renderedFields || {}; const names = issue.names || {}; data.summary = fields.summary || ''; data.description = rendered.description || fields.description || ''; data.issueType = fields.issuetype ? fields.issuetype.name : 'Story'; data.status = fields.status ? fields.status.name : 'To Do'; data.priority = fields.priority ? fields.priority.name : 'Medium'; data.assignee = fields.assignee ? fields.assignee.displayName : 'Unassigned'; data.reporter = fields.reporter ? fields.reporter.displayName : 'N/A'; data.labels = fields.labels || []; data.components = (fields.components || []).map(c => c.name); for (const [cfKey, cfLabel] of Object.entries(names)) { const lbl = cfLabel.toLowerCase(); if (lbl.includes('point') && fields[cfKey] !== undefined) { data.storyPoints = fields[cfKey]; } if ((lbl.includes('acceptance') || lbl.includes('criteria') || lbl.includes('tiêu chí')) && fields[cfKey]) { data.acceptanceCriteria = rendered[cfKey] || fields[cfKey]; } if (lbl.includes('sprint') && fields[cfKey]) { const spVal = fields[cfKey]; if (Array.isArray(spVal) && spVal.length) { const last = spVal[spVal.length - 1]; data.sprint = typeof last === 'string' ? (last.match(/name=([^,\]]+)/) || [,''])[1] : (last.name || ''); } else if (typeof spVal === 'string') { data.sprint = (spVal.match(/name=([^,\]]+)/) || [,''])[1] || spVal; } } } restSuccess = true; } } catch (err) { console.warn('[Sync to Retrofit] Jira REST API failed, using DOM fallback', err); } if (!restSuccess || !data.summary) { const summaryEl = document.querySelector('#summary-val') || document.querySelector('h1[data-test-id="issue.views.issue-base.foundation.summary.heading"]') || document.querySelector('h1'); if (summaryEl) data.summary = summaryEl.innerText.trim(); const descEl = document.querySelector('#description-val') || document.querySelector('[data-test-id="issue.views.field.rich-text.description"]') || document.querySelector('#descriptionmodule .user-content-block'); if (descEl) data.description = descEl.innerText.trim(); const statusEl = document.querySelector('#status-val') || document.querySelector('.jira-issue-status-lozenge'); if (statusEl) data.status = statusEl.innerText.trim(); const typeEl = document.querySelector('#type-val'); if (typeEl) data.issueType = typeEl.innerText.trim(); const priorityEl = document.querySelector('#priority-val'); if (priorityEl) data.priority = priorityEl.innerText.trim(); const assigneeEl = document.querySelector('#assignee-val'); if (assigneeEl) data.assignee = assigneeEl.innerText.trim(); const reporterEl = document.querySelector('#reporter-val'); if (reporterEl) data.reporter = reporterEl.innerText.trim(); } function stripHtml(html) { if (!html) return ''; const tmp = document.createElement('div'); tmp.innerHTML = html; return tmp.innerText || tmp.textContent || ''; } if (data.description && data.description.includes('<')) { data.description = stripHtml(data.description); } if (data.acceptanceCriteria && data.acceptanceCriteria.includes('<')) { data.acceptanceCriteria = stripHtml(data.acceptanceCriteria); } const mdContent = `# [${data.key}] ${data.summary || 'Untitled Jira Ticket'}\n\n` + `| Thuộc tính | Giá trị |\n` + `| :--- | :--- |\n` + `| **Key** | \`${data.key}\` |\n` + `| **Loại (Issue Type)** | ${data.issueType} |\n` + `| **Trạng thái (Status)** | \`${data.status}\` |\n` + `| **Độ ưu tiên (Priority)** | ${data.priority} |\n` + `| **Người thực hiện (Assignee)** | ${data.assignee} |\n` + `| **Người tạo (Reporter)** | ${data.reporter} |\n` + `| **Sprint** | ${data.sprint || 'Grids Ampere 26-17'} |\n` + `| **Story Points** | ${data.storyPoints !== null && data.storyPoints !== undefined ? data.storyPoints : 'N/A'} |\n` + `| **Jira URL** | [${data.url}](${data.url}) |\n` + `| **Synced At** | \`${new Date().toISOString()}\` |\n\n` + `---\n\n` + `## 📝 Description\n\n${data.description || '*(No description provided)*'}\n\n` + `---\n\n` + `## 🎯 Acceptance Criteria (AC)\n\n${data.acceptanceCriteria || '*(See description above)*'}\n\n` + `---\n\n` + `## 🤖 Copilot Automation Context\n` + `- **Target Spec Path**: \`tests/e2e/TC-${data.key}.spec.ts\`\n` + `- **Test Plan Path**: \`tests/testcases/TC-${data.key}.md\`\n` + `- **Related Confluence Docs**: Check \`docs/specs/index.yaml\`\n`; data.markdown = mdContent; let localSaved = false; try { const postRes = await fetch(RETROFIT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (postRes.ok) { localSaved = true; const resJson = await postRes.json(); showToast( `✅ Đã lưu ${data.key} vào Retrofit!`, true, `File: <b>${resJson.file}</b><br>Copilot sẵn sàng generate Playwright test spec.` ); } } catch (netErr) { console.warn('[Sync to Retrofit] Local server unreachable:', netErr); } try { fetch(BOLT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: data.key, summary: data.summary, description: data.description, status: data.status, assignee: data.assignee, reporter: data.reporter, story_points: data.storyPoints, sprint: data.sprint, url: data.url }) }).catch(() => {}); } catch (_) {} if (!localSaved) { try { await navigator.clipboard.writeText(mdContent); const blob = new Blob([mdContent], { type: 'text/markdown' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${data.key}.md`; a.click(); showToast( `⚠️ Đã tải ${data.key}.md & Copy Clipboard!`, false, 'Server port 3001 chưa bật. File đã được tải về máy và copy vào clipboard để dán vào docs/tickets/.' ); } catch (clipErr) { showToast('❌ Không thể lưu vào port 3001', false, 'Hãy chạy: node demo-server.js trong QA-Playwright-KFWT-Retrofit'); } } })();">⚡ Sync to Retrofit</a>
+    </div>
+
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <b>Kéo nút trên vào Bookmark Bar:</b> Nhấp giữ nút <code>⚡ Sync to Retrofit</code> và kéo lên thanh Bookmark Bar của Chrome (hoặc ấn <kbd>Ctrl+Shift+B</kbd> nếu thanh Bookmark chưa hiện).
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <b>Mở Jira Ticket:</b> Mở tab Jira bất kỳ (ví dụ: <a href="https://jira.eon.com/browse/KFWT-1161" target="_blank" style="color: var(--primary);">[KFWT-1161] Primary and Secondary Metering</a>).
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <b>Click Bookmarklet:</b> Nhấp vào nút <code>⚡ Sync to Retrofit</code> trên Bookmark Bar. Toàn bộ Summary, Description, AC, Story Points và Sprint sẽ được lưu tự động vào <code>QA-Playwright-KFWT-Retrofit/docs/tickets/KFWT-1161.md</code>!
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 10px;">
+      <p style="font-size: 13px; color: var(--muted); margin-bottom: 8px;"><b>Cách 2: Copy mã JavaScript thủ công vào Bookmark:</b></p>
+      <button class="btn-copy" onclick="copyCode()">📋 Copy Bookmarklet Code</button>
+      <div class="code-box" id="codebox">javascript:(async function() { const RETROFIT_API = 'http: const BOLT_API = 'http: function showToast(msg, isSuccess = true, subMsg = '') { const id = '__jira_retrofit_sync_toast'; let el = document.getElementById(id); if (el) el.remove(); el = document.createElement('div'); el.id = id; el.style.cssText = ` position: fixed; bottom: 24px; right: 24px; z-index: 999999; background: #0d1117; color: #f0f6fc; border: 1px solid ${isSuccess ? '#238636' : '#da3633'}; border-left: 5px solid ${isSuccess ? '#2ea043' : '#f85149'}; padding: 16px 20px; border-radius: 8px; box-shadow: 0 12px 28px rgba(0,0,0,0.45); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.5; max-width: 420px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); `; el.innerHTML = ` <div style="display: flex; align-items: flex-start; gap: 10px;"> <span style="font-size: 18px;">${isSuccess ? '⚡' : '⚠️'}</span> <div style="flex: 1;"> <strong style="color: ${isSuccess ? '#56d364' : '#ff7b72'}; font-size: 14px; display: block; margin-bottom: 4px;"> ${msg} </strong> ${subMsg ? `<div style="color: #8b949e; font-size: 12px;">${subMsg}</div>` : ''} </div> <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: #8b949e; cursor: pointer; font-size: 16px; padding: 0 4px;">×</button> </div> `; document.body.appendChild(el); setTimeout(() => { if (el && el.parentElement) el.remove(); }, 7000); } const match = window.location.pathname.match(/\/browse\/([A-Z0-9]+-\d+)/i) || document.title.match(/\[([A-Z0-9]+-\d+)\]/i); if (!match) { showToast('Không tìm thấy Jira Ticket Key!', false, 'Hãy chắc chắn bạn đang mở trang Jira Ticket (ví dụ /browse/KFWT-1161)'); return; } const ticketKey = match[1].toUpperCase(); showToast(`Đang trích xuất dữ liệu ${ticketKey}...`, true, 'Đang đọc từ Jira REST API & DOM'); let data = { key: ticketKey, summary: '', description: '', acceptanceCriteria: '', issueType: 'Story', status: 'To Do', priority: 'Medium', assignee: 'Unassigned', reporter: 'N/A', sprint: '', storyPoints: null, url: window.location.href, labels: [], components: [] }; let restSuccess = false; try { const res = await fetch(`/rest/api/2/issue/${ticketKey}?expand=renderedFields,names`, { credentials: 'include', headers: { 'Accept': 'application/json' } }); if (res.ok) { const issue = await res.json(); const fields = issue.fields || {}; const rendered = issue.renderedFields || {}; const names = issue.names || {}; data.summary = fields.summary || ''; data.description = rendered.description || fields.description || ''; data.issueType = fields.issuetype ? fields.issuetype.name : 'Story'; data.status = fields.status ? fields.status.name : 'To Do'; data.priority = fields.priority ? fields.priority.name : 'Medium'; data.assignee = fields.assignee ? fields.assignee.displayName : 'Unassigned'; data.reporter = fields.reporter ? fields.reporter.displayName : 'N/A'; data.labels = fields.labels || []; data.components = (fields.components || []).map(c => c.name); for (const [cfKey, cfLabel] of Object.entries(names)) { const lbl = cfLabel.toLowerCase(); if (lbl.includes('point') && fields[cfKey] !== undefined) { data.storyPoints = fields[cfKey]; } if ((lbl.includes('acceptance') || lbl.includes('criteria') || lbl.includes('tiêu chí')) && fields[cfKey]) { data.acceptanceCriteria = rendered[cfKey] || fields[cfKey]; } if (lbl.includes('sprint') && fields[cfKey]) { const spVal = fields[cfKey]; if (Array.isArray(spVal) && spVal.length) { const last = spVal[spVal.length - 1]; data.sprint = typeof last === 'string' ? (last.match(/name=([^,\]]+)/) || [,''])[1] : (last.name || ''); } else if (typeof spVal === 'string') { data.sprint = (spVal.match(/name=([^,\]]+)/) || [,''])[1] || spVal; } } } restSuccess = true; } } catch (err) { console.warn('[Sync to Retrofit] Jira REST API failed, using DOM fallback', err); } if (!restSuccess || !data.summary) { const summaryEl = document.querySelector('#summary-val') || document.querySelector('h1[data-test-id="issue.views.issue-base.foundation.summary.heading"]') || document.querySelector('h1'); if (summaryEl) data.summary = summaryEl.innerText.trim(); const descEl = document.querySelector('#description-val') || document.querySelector('[data-test-id="issue.views.field.rich-text.description"]') || document.querySelector('#descriptionmodule .user-content-block'); if (descEl) data.description = descEl.innerText.trim(); const statusEl = document.querySelector('#status-val') || document.querySelector('.jira-issue-status-lozenge'); if (statusEl) data.status = statusEl.innerText.trim(); const typeEl = document.querySelector('#type-val'); if (typeEl) data.issueType = typeEl.innerText.trim(); const priorityEl = document.querySelector('#priority-val'); if (priorityEl) data.priority = priorityEl.innerText.trim(); const assigneeEl = document.querySelector('#assignee-val'); if (assigneeEl) data.assignee = assigneeEl.innerText.trim(); const reporterEl = document.querySelector('#reporter-val'); if (reporterEl) data.reporter = reporterEl.innerText.trim(); } function stripHtml(html) { if (!html) return ''; const tmp = document.createElement('div'); tmp.innerHTML = html; return tmp.innerText || tmp.textContent || ''; } if (data.description && data.description.includes('<')) { data.description = stripHtml(data.description); } if (data.acceptanceCriteria && data.acceptanceCriteria.includes('<')) { data.acceptanceCriteria = stripHtml(data.acceptanceCriteria); } const mdContent = `# [${data.key}] ${data.summary || 'Untitled Jira Ticket'}\n\n` + `| Thuộc tính | Giá trị |\n` + `| :--- | :--- |\n` + `| **Key** | \`${data.key}\` |\n` + `| **Loại (Issue Type)** | ${data.issueType} |\n` + `| **Trạng thái (Status)** | \`${data.status}\` |\n` + `| **Độ ưu tiên (Priority)** | ${data.priority} |\n` + `| **Người thực hiện (Assignee)** | ${data.assignee} |\n` + `| **Người tạo (Reporter)** | ${data.reporter} |\n` + `| **Sprint** | ${data.sprint || 'Grids Ampere 26-17'} |\n` + `| **Story Points** | ${data.storyPoints !== null && data.storyPoints !== undefined ? data.storyPoints : 'N/A'} |\n` + `| **Jira URL** | [${data.url}](${data.url}) |\n` + `| **Synced At** | \`${new Date().toISOString()}\` |\n\n` + `---\n\n` + `## 📝 Description\n\n${data.description || '*(No description provided)*'}\n\n` + `---\n\n` + `## 🎯 Acceptance Criteria (AC)\n\n${data.acceptanceCriteria || '*(See description above)*'}\n\n` + `---\n\n` + `## 🤖 Copilot Automation Context\n` + `- **Target Spec Path**: \`tests/e2e/TC-${data.key}.spec.ts\`\n` + `- **Test Plan Path**: \`tests/testcases/TC-${data.key}.md\`\n` + `- **Related Confluence Docs**: Check \`docs/specs/index.yaml\`\n`; data.markdown = mdContent; let localSaved = false; try { const postRes = await fetch(RETROFIT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (postRes.ok) { localSaved = true; const resJson = await postRes.json(); showToast( `✅ Đã lưu ${data.key} vào Retrofit!`, true, `File: <b>${resJson.file}</b><br>Copilot sẵn sàng generate Playwright test spec.` ); } } catch (netErr) { console.warn('[Sync to Retrofit] Local server unreachable:', netErr); } try { fetch(BOLT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: data.key, summary: data.summary, description: data.description, status: data.status, assignee: data.assignee, reporter: data.reporter, story_points: data.storyPoints, sprint: data.sprint, url: data.url }) }).catch(() => {}); } catch (_) {} if (!localSaved) { try { await navigator.clipboard.writeText(mdContent); const blob = new Blob([mdContent], { type: 'text/markdown' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${data.key}.md`; a.click(); showToast( `⚠️ Đã tải ${data.key}.md & Copy Clipboard!`, false, 'Server port 3001 chưa bật. File đã được tải về máy và copy vào clipboard để dán vào docs/tickets/.' ); } catch (clipErr) { showToast('❌ Không thể lưu vào port 3001', false, 'Hãy chạy: node demo-server.js trong QA-Playwright-KFWT-Retrofit'); } } })();</div>
+    </div>
+  </div>
+
+  <script>
+    function copyCode() {
+      const text = document.getElementById('codebox').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Đã copy Bookmarklet code! Sếp có thể tạo Bookmark mới trên Chrome và Paste vào ô URL.');
+      });
+    }
+  </script>
+</body>
+</html>
