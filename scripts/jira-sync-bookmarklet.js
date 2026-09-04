@@ -69,13 +69,24 @@
     storyPoints: null,
     url: window.location.href,
     labels: [],
-    components: []
+    components: [],
+    comments: []
   };
+
+  // Helper: chuẩn hoá 1 comment REST API (Jira Server/DC v2) hoặc ADF-rendered thành object sạch
+  function normalizeRestComment(c) {
+    const rawBody = (c.renderedBody || c.body || '').toString();
+    return {
+      author: (c.updateAuthor && c.updateAuthor.displayName) || (c.author && c.author.displayName) || 'Unknown',
+      created: c.created || c.updated || '',
+      body: rawBody
+    };
+  }
 
   // 2. Try Fetching via Jira Internal REST API (Cookie Auth)
   let restSuccess = false;
   try {
-    const res = await fetch(`/rest/api/2/issue/${ticketKey}?expand=renderedFields,names`, {
+    const res = await fetch(`/rest/api/2/issue/${ticketKey}?expand=renderedFields,names&fields=*all,comment`, {
       credentials: 'include',
       headers: { 'Accept': 'application/json' }
     });
@@ -84,6 +95,17 @@
       const fields = issue.fields || {};
       const rendered = issue.renderedFields || {};
       const names = issue.names || {};
+
+      // Trích xuất Comments (fields.comment.comments) — nguồn "Resolution Authority" khi PO/Dev
+      // đã chốt phương án xử lý mâu thuẫn nghiệp vụ trực tiếp trong Jira Comments.
+      const restComments = (fields.comment && Array.isArray(fields.comment.comments)) ? fields.comment.comments : [];
+      const renderedComments = (rendered.comment && Array.isArray(rendered.comment.comments)) ? rendered.comment.comments : [];
+      if (restComments.length) {
+        data.comments = restComments.map((c, idx) => {
+          const renderedMatch = renderedComments[idx] || {};
+          return normalizeRestComment({ ...c, renderedBody: renderedMatch.body || c.body });
+        });
+      }
 
       data.summary = fields.summary || '';
       data.description = rendered.description || fields.description || '';
@@ -148,6 +170,23 @@
     if (reporterEl) data.reporter = reporterEl.innerText.trim();
   }
 
+  // 3b. DOM fallback cho Comments nếu REST API chưa trả về (vd Jira Cloud custom permission)
+  if (!data.comments.length) {
+    const commentNodes = document.querySelectorAll('.activity-comment, div[id^="comment-"]');
+    commentNodes.forEach(node => {
+      const authorEl = node.querySelector('.action-details .user-hover, .action-head .user-hover, a.user-hover, .twixi-name');
+      const dateEl = node.querySelector('.action-details time, .date, time');
+      const bodyEl = node.querySelector('.action-body, .comment-body, .twixi-wrap .action-body');
+      const body = bodyEl ? bodyEl.innerHTML : '';
+      if (!body) return;
+      data.comments.push({
+        author: authorEl ? authorEl.innerText.trim() : 'Unknown',
+        created: dateEl ? (dateEl.getAttribute('datetime') || dateEl.innerText.trim()) : '',
+        body
+      });
+    });
+  }
+
   // Clean html tags from description if needed
   function stripHtml(html) {
     if (!html) return '';
@@ -160,6 +199,25 @@
   }
   if (data.acceptanceCriteria && data.acceptanceCriteria.includes('<')) {
     data.acceptanceCriteria = stripHtml(data.acceptanceCriteria);
+  }
+  // Làm sạch nội dung từng comment (giữ author/created nguyên văn, chỉ strip HTML body)
+  data.comments = (data.comments || [])
+    .map(c => ({
+      author: c.author || 'Unknown',
+      created: c.created || '',
+      body: c.body && c.body.includes('<') ? stripHtml(c.body) : (c.body || '')
+    }))
+    .filter(c => c.body && c.body.trim());
+
+  // 4b. Format khối Comments & Discussion — nguồn Resolution Authority khi PO/Dev đã chốt
+  // mâu thuẫn nghiệp vụ (vd 1 task vs 2 task) trực tiếp trong Jira Comments.
+  let commentsSection = '';
+  if (data.comments.length) {
+    commentsSection = `---\n\n## 💬 Jira Comments & Discussion\n\n` +
+      data.comments.map((c, i) => {
+        const dateStr = c.created ? new Date(c.created).toLocaleString('vi-VN') : 'N/A';
+        return `**#${i + 1} — ${c.author}** _(${dateStr})_\n\n${c.body}\n`;
+      }).join('\n---\n\n') + '\n\n';
   }
 
   // 4. Format Markdown
@@ -180,7 +238,7 @@
     `## 📝 Description\n\n${data.description || '*(No description provided)*'}\n\n` +
     `---\n\n` +
     `## 🎯 Acceptance Criteria (AC)\n\n${data.acceptanceCriteria || '*(See description above)*'}\n\n` +
-    `---\n\n` +
+    (commentsSection || `---\n\n`) +
     `## 🤖 Copilot Automation Context\n` +
     `- **Target Spec Path**: \`tests/e2e/TC-${data.key}.spec.ts\`\n` +
     `- **Test Plan Path**: \`tests/testcases/TC-${data.key}.md\`\n` +

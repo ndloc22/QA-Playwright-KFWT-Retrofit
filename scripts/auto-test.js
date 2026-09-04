@@ -4,6 +4,29 @@
  *   npm run auto-test KFWT-1161
  *   npm run auto-test https://jira.eon.com/browse/KFWT-1161
  *
+ * 🏗️ Model-tiering architecture (token/cost optimization):
+ *   [1/4] fetch-jira.js            -> 0 token (browser scraping, no AI call)
+ *   [2/4] /summarize-story          -> claude-sonnet-5  (cheap extraction: reads
+ *                                      ticket + image attachments + Jira comments,
+ *                                      cross-references codebase OpenSpecs, and
+ *                                      condenses everything into
+ *                                      docs/tickets/<KEY>.summary.json)
+ *   [3/4] /analyze-story + /new-test -> claude-opus-4.8 (default; deep
+ *                                      analysis, conflict resolution,
+ *                                      test-matrix design, and Playwright
+ *                                      spec generation on the condensed
+ *                                      summary.json (~30k tokens) instead of
+ *                                      raw images/full YAML, so Opus's extra
+ *                                      reasoning depth stays affordable).
+ *                                      Override to claude-sonnet-5 via
+ *                                      AUTO_TEST_ANALYSIS_MODEL=claude-sonnet-5,
+ *                                      or the CLI flags `--sonnet` / `--model <name>`
+ *                                      (e.g. `npm run auto-test KFWT-1161 -- --sonnet`).
+ *   [4/4] Playwright execution      -> 0 token (local engine); on failure,
+ *                                      self-healing diagnosis/fix runs on
+ *                                      claude-sonnet-5 (/fix-failed-test),
+ *                                      then the spec is re-run once to verify.
+ *
  * Windows-safety notes (READ BEFORE EDITING):
  * - `.cmd`/`.bat` shims (npx.cmd, copilot.cmd) MUST NOT be spawned with
  *   `shell: false` on Windows. Node.js historically wraps these internally
@@ -26,6 +49,53 @@ const fs = require('fs');
 
 const IS_WINDOWS = process.platform === 'win32';
 const ROOT_DIR = path.join(__dirname, '..');
+
+/**
+ * Model tiering: each pipeline step is pinned to the AI model appropriate for
+ * its actual reasoning depth, not the most expensive model available. This is
+ * the core of the token/cost-optimization architecture (see header comment).
+ * Override via env vars if a Tester wants to experiment with different tiers
+ * without editing this file (e.g. temporarily downgrade/upgrade for a tricky ticket).
+ */
+const MODEL_SUMMARY = process.env.AUTO_TEST_SUMMARY_MODEL || 'claude-sonnet-5';
+const MODEL_SELF_HEAL = process.env.AUTO_TEST_SELF_HEAL_MODEL || 'claude-sonnet-5';
+
+/**
+ * Step 3 (/analyze-story + /new-test) model resolution, in priority order:
+ *   1. CLI flag: `--model <name>` (explicit) or `--sonnet` (shorthand for
+ *      `--model claude-sonnet-5`), e.g. `npm run auto-test KFWT-1161 -- --sonnet`
+ *      or `npm run auto-test KFWT-1161 -- --model claude-sonnet-5`.
+ *   2. Env var override: AUTO_TEST_ANALYSIS_MODEL (e.g. for CI or a Tester's
+ *      shell profile who always wants the cheaper/faster tier without typing
+ *      a flag every time).
+ *   3. Default: `claude-opus-4.8` -- deep analysis, conflict resolution,
+ *      test-matrix design, and Playwright spec generation deserve Opus's
+ *      extra reasoning depth; this stays affordable because Step 3 reads the
+ *      condensed summary.json (~30k tokens) produced by Step 2 instead of
+ *      raw images/full YAML.
+ * A Tester can still opt into `claude-sonnet-5` any time the cheaper/faster
+ * tier is preferred for a straightforward ticket, via either mechanism above.
+ */
+function resolveAnalysisModelFromArgs(argv) {
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--sonnet') {
+      return 'claude-sonnet-5';
+    }
+    if (arg === '--model' && argv[i + 1]) {
+      return argv[i + 1];
+    }
+    if (arg.startsWith('--model=')) {
+      return arg.slice('--model='.length);
+    }
+  }
+  return null;
+}
+
+const MODEL_ANALYSIS =
+  resolveAnalysisModelFromArgs(process.argv.slice(2)) ||
+  process.env.AUTO_TEST_ANALYSIS_MODEL ||
+  'claude-opus-4.8';
 
 /**
  * Quote a single argument for cmd.exe when it is embedded in a full command
@@ -104,11 +174,110 @@ function fail(message, code = 1) {
   process.exit(code);
 }
 
+/**
+ * Invoke the Copilot CLI non-interactively with a given prompt and a pinned
+ * model tier (see MODEL_* constants above). The prompt is always written to a
+ * temp file first (never passed as a raw CLI argument) to sidestep both the
+ * Node.js .cmd/.bat EINVAL issue and cmd.exe's ~8191 character command line
+ * limit -- consistent with the Windows-safety notes in the header comment.
+ * Returns { error, status, output } and never throws; the temp file is always
+ * cleaned up before returning.
+ */
+function runCopilotPrompt(promptText, { model, tmpFileSuffix }) {
+  const tmpPromptPath = path.join(ROOT_DIR, `.tmp-copilot-prompt-${tmpFileSuffix}.txt`);
+  fs.writeFileSync(tmpPromptPath, promptText, 'utf-8');
+
+  const shortInstruction =
+    `Read the file ${path.relative(ROOT_DIR, tmpPromptPath).replace(/\\/g, '/')} in the current working directory ` +
+    `and carry out ALL instructions written in it exactly, then generate/update the files it specifies.`;
+
+  console.log(`   🧠 Model: ${model}`);
+  console.log(`   📄 Full prompt written to: ${path.relative(ROOT_DIR, tmpPromptPath)}`);
+
+  const copilotBin = resolveWindowsBinary('copilot');
+  // NOTE: stdout/stderr are captured (not 'inherit') so callers can inspect
+  // Copilot's response afterwards (e.g. to distinguish an intentional SOP
+  // "Blocker" stop from a real technical failure). The captured output is
+  // echoed to the console right after the process exits, so the Tester still
+  // sees everything Copilot said -- just not streamed live, character by character.
+  const copilotResult = safeSpawnSync(copilotBin, ['-p', shortInstruction, '--model', model, '--allow-all'], {
+    stdio: ['inherit', 'pipe', 'pipe'],
+    cwd: ROOT_DIR,
+    encoding: 'utf-8'
+  });
+
+  const copilotStdout = copilotResult.stdout || '';
+  const copilotStderr = copilotResult.stderr || '';
+  if (copilotStdout) process.stdout.write(copilotStdout);
+  if (copilotStderr) process.stderr.write(copilotStderr);
+
+  // Clean up the temp prompt file regardless of outcome (also protected by .gitignore).
+  fs.rmSync(tmpPromptPath, { force: true });
+
+  return {
+    error: copilotResult.error,
+    status: copilotResult.status,
+    output: `${copilotStdout}\n${copilotStderr}`
+  };
+}
+
+/**
+ * Patterns that indicate the story was intentionally stopped per the
+ * project's mandatory "Blocker & Open Questions" SOP (see README.md,
+ * section 11) rather than a real technical failure to produce a spec file.
+ * Matched case-insensitively against both the ticket markdown (which should
+ * contain the "## 🔴 Open Questions & Blockers" section written by Copilot)
+ * and Copilot's own stdout/stderr for this run.
+ */
+const BLOCKER_MARKERS = [
+  /open questions?\s*&\s*blockers/i,
+  /blocker/i,
+  /st[oó]ry\s*b[iị]\s*ch[aặ]n/i,
+  /b[aả]ng\s*c[aâ]u\s*h[oỏ]i/i,
+  /clear gate/i,
+];
+
+function textLooksLikeBlocker(text) {
+  if (!text) return false;
+  return BLOCKER_MARKERS.some((re) => re.test(text));
+}
+
+/**
+ * Detect whether Step 2 stopped because the story is legitimately Blocked
+ * (per the mandatory Blocker & Open Questions SOP), as opposed to a real
+ * technical failure that happened to also leave the spec file missing.
+ *
+ * Checks, in order:
+ *   1. docs/tickets/<KEY>.md for the "## 🔴 Open Questions & Blockers"
+ *      section (or equivalent blocker/clear-gate markers) written by Copilot
+ *      while following .github/prompts/analyze-story.prompt.md.
+ *   2. Copilot's captured stdout/stderr for this run for the same markers
+ *      (covers the case where Copilot reported the blocker in its response
+ *      but, for any reason, did not persist it to the ticket file yet).
+ */
+function detectBlocker(key, copilotOutput) {
+  const ticketMdPath = path.join(ROOT_DIR, 'docs', 'tickets', `${key}.md`);
+  if (fs.existsSync(ticketMdPath)) {
+    try {
+      const ticketContent = fs.readFileSync(ticketMdPath, 'utf-8');
+      if (textLooksLikeBlocker(ticketContent)) {
+        return true;
+      }
+    } catch (_err) {
+      // If we can't read the ticket file for some reason, fall through to
+      // checking Copilot's output instead of crashing the pipeline here.
+    }
+  }
+  return textLooksLikeBlocker(copilotOutput);
+}
+
 const target = process.argv[2];
 if (!target) {
-  console.log('\n\x1b[33m⚡ Usage: npm run auto-test <TICKET_KEY_OR_URL>\x1b[0m');
+  console.log('\n\x1b[33m⚡ Usage: npm run auto-test <TICKET_KEY_OR_URL> [-- --sonnet | --model <name>]\x1b[0m');
   console.log('   Example: npm run auto-test KFWT-1161');
-  console.log('            npm run auto-test https://jira.eon.com/browse/KFWT-1161\n');
+  console.log('            npm run auto-test https://jira.eon.com/browse/KFWT-1161');
+  console.log('            npm run auto-test KFWT-1161 -- --sonnet               (Step 3 on claude-sonnet-5)');
+  console.log('            npm run auto-test KFWT-1161 -- --model claude-sonnet-5\n');
   process.exit(1);
 }
 
@@ -120,9 +289,9 @@ const key = match[1].toUpperCase();
 
 printHeader(`🚀 STARTING ALL-IN-ONE AUTOMATION PIPELINE FOR \x1b[36m${key}\x1b[0m`);
 
-// ── STEP 1: FETCH JIRA TICKET + ATTACHMENTS ───────────────────────
+// ── STEP 1: FETCH JIRA TICKET + ATTACHMENTS (0 token) ─────────────
 function fetchJira() {
-  console.log(`\x1b[1m[1/3] 📥 Ingesting Jira ticket & downloading media...\x1b[0m`);
+  console.log(`\x1b[1m[1/4] 📥 Ingesting Jira ticket & downloading media...\x1b[0m`);
   const fetchScript = path.join(__dirname, 'fetch-jira.js');
   const nodeBin = process.execPath;
 
@@ -140,7 +309,7 @@ function fetchJira() {
     fail(
       `Step 1 (Fetch Jira) failed with exit code ${fetchResult.status}.\n` +
       `   -> Check your Jira SSO session (.auth/jira-profile) and ticket key "${key}", then retry.\n` +
-      `   -> Pipeline stopped: Step 2/3 were NOT executed.`
+      `   -> Pipeline stopped: Steps 2-4 were NOT executed.`
     );
   }
 
@@ -148,15 +317,68 @@ function fetchJira() {
   if (!fs.existsSync(ticketMdPath)) {
     fail(
       `Step 1 (Fetch Jira) reported success but ${path.relative(ROOT_DIR, ticketMdPath)} was not found.\n` +
-      `   -> Pipeline stopped: Step 2/3 were NOT executed.`
+      `   -> Pipeline stopped: Steps 2-4 were NOT executed.`
     );
   }
   return ticketMdPath;
 }
 
-// ── STEP 2: INVOKE COPILOT TO ANALYZE & GENERATE TESTCASE + SPEC ──
-function generateTest() {
-  console.log(`\n\x1b[1m[2/3] 🤖 Calling GitHub Copilot to analyze story & generate test spec (100% English)...\x1b[0m`);
+// ── STEP 2: SUMMARIZE STORY CONTENT (cheap model tier, claude-sonnet-5) ───
+// Reads the ticket + image attachments + Jira comments + codebase OpenSpecs
+// and condenses everything into docs/tickets/<KEY>.summary.json, so Step 3
+// doesn't need to re-load the raw, token-heavy sources. This step is
+// intentionally non-fatal: /analyze-story has its own fallback path that
+// re-reads raw sources if the summary is missing, so a failure here degrades
+// gracefully instead of blocking the
+// whole pipeline.
+function summarizeStory() {
+  console.log(`\n\x1b[1m[2/4] 🧾 Summarizing ticket content (images, comments, codebase grounding)...\x1b[0m`);
+
+  const relSummaryPath = `docs/tickets/${key}.summary.json`;
+  const fullSummaryPath = path.join(ROOT_DIR, 'docs', 'tickets', `${key}.summary.json`);
+
+  const prompt = `You are executing the "summarize" step of the model-tiered automated test pipeline for ticket ${key}.
+
+Source ticket: docs/tickets/${key}.md
+Associated media: docs/tickets/${key}/attachments/ and docs/tickets/${key}/screenshots/ (if any)
+Grounding sources: docs/specs/codebase/ui_components.yaml and docs/specs/codebase/state_machine.yaml
+
+Instructions:
+1. Follow .github/prompts/summarize-story.prompt.md exactly.
+2. Write the condensed, structured summary to exactly: ${relSummaryPath}
+3. Do NOT classify Blocker/Warning and do NOT generate any testcase/.spec.ts file in this step --
+   that reasoning-heavy work happens in the next pipeline step, on a different (more capable) model.
+
+Generate or update this file now.`;
+
+  console.log(`⏳ Extracting & condensing ticket content to cut input tokens for the next step...`);
+
+  const result = runCopilotPrompt(prompt, { model: MODEL_SUMMARY, tmpFileSuffix: `summarize-${key}` });
+
+  if (result.error) {
+    console.warn(`\x1b[33m⚠️  Step 2 (Summarize) could not be started: ${result.error.message}\x1b[0m`);
+    console.warn(`   -> Continuing without a pre-computed summary; Step 3 will fall back to reading raw ticket content itself.`);
+    return null;
+  }
+  if (result.status !== 0 || !fs.existsSync(fullSummaryPath)) {
+    console.warn(`\x1b[33m⚠️  Step 2 (Summarize) did not produce ${relSummaryPath} (exit code ${result.status}).\x1b[0m`);
+    console.warn(`   -> Continuing without a pre-computed summary; Step 3 will fall back to reading raw ticket content itself (costs more tokens, but the pipeline still works).`);
+    return null;
+  }
+
+  console.log(`\x1b[32m✅ Step 2 completed: ${relSummaryPath} generated.\x1b[0m`);
+  return relSummaryPath;
+}
+
+// ── STEP 3: INVOKE COPILOT TO ANALYZE & GENERATE TESTCASE + SPEC ──
+// Default model claude-opus-4.8 (deep reasoning for conflict resolution +
+// test-matrix design + Playwright spec generation). Reads
+// docs/tickets/<KEY>.summary.json (produced by Step 2, ~30k tokens) instead
+// of raw images/full YAML wherever possible, keeping Opus's cost in check.
+// Use `--sonnet` / `--model <name>` or AUTO_TEST_ANALYSIS_MODEL to switch to
+// claude-sonnet-5 for simpler tickets.
+function generateTest(summaryRelPath) {
+  console.log(`\n\x1b[1m[3/4] 🤖 Calling GitHub Copilot to analyze story & generate test spec (100% English)...\x1b[0m`);
 
   const relSpecPath = `tests/e2e/TC-${key}.spec.ts`;
   const fullSpecPath = path.join(ROOT_DIR, 'tests', 'e2e', `TC-${key}.spec.ts`);
@@ -164,12 +386,16 @@ function generateTest() {
   const fullPrompt = `You are executing the automated end-to-end test generation for ticket ${key}.
 
 Source ticket: docs/tickets/${key}.md
+${summaryRelPath
+    ? `Condensed summary (PREFER THIS over raw sources below to save tokens): ${summaryRelPath}\n` +
+      `Raw sources (fallback only, use them ONLY if the summary is missing a detail you actually need):`
+    : `Condensed summary: not available for this run -- read the raw sources below directly:`}
 Associated media: docs/tickets/${key}/attachments/ (if any)
 Grounding sources: docs/specs/codebase/ui_components.yaml and docs/specs/codebase/state_machine.yaml
 Business specs: docs/specs/process.yaml and docs/specs/roles.yaml
 
 Instructions:
-1. Follow .github/prompts/analyze-story.prompt.md to inspect media, ground components, and check for conflicts.
+1. Follow .github/prompts/analyze-story.prompt.md to check for conflicts${summaryRelPath ? `, reading ${summaryRelPath} as the primary data source` : ' (no pre-computed summary available -- run its full fallback Multimodal Inspection + Grounding steps)'}.
 2. Follow .github/prompts/new-test.prompt.md to generate:
    - tests/testcases/TC-${key}.md (100% English Given/When/Then, keeping German UI labels)
    - tests/pages/<Feature>Page.ts (Page Object if new components are needed)
@@ -178,19 +404,20 @@ Instructions:
    written in 100% professional English. Keep original German domain/UI labels from Axon Ivy/KFWT
    verbatim where the real application displays them in German (e.g. "Quelle-Senke-Test") -- do NOT
    translate German UI labels into English, only the surrounding English prose/comments.
-4. Modular Test Cases (MANDATORY): DO NOT collapse the whole story into a single testcase. Decompose
-   it into independent sub test cases numbered TC-${key}-01, TC-${key}-02, TC-${key}-03, TC-${key}-04
-   (add TC-${key}-05, -06, ... if more independent business aspects exist):
-   - TC-${key}-01: UI & Default State verification (open the task/screen, verify read-only fields,
-     new data card/fields render correctly, checkboxes/fields have correct default values).
-   - TC-${key}-02: Negative / Validation verification (attempt the main action -- e.g. Complete --
-     without satisfying required conditions -- e.g. before checking required checkboxes -- and
-     confirm the action is blocked: button disabled or a validation error is shown).
-   - TC-${key}-03: Positive / Happy Path verification (satisfy the required conditions, perform the
-     main action, and confirm success plus the correct next step/state per the AC).
-   - TC-${key}-04: Configuration / Skippable verification (if the AC mentions it -- confirm the task
-     can be configured as skippable in the relevant administration screen, e.g. Workflow
-     Administration).
+4. Modular Test Cases (MANDATORY): DO NOT collapse the whole story into a single testcase, and DO NOT
+   force-fit the story into any fixed template from a previous ticket. Instead, act as a senior QA
+   Automation Engineer analyzing this ticket independently:
+   a. Read the Description, ALL Acceptance Criteria, any diagram/mockup, and resolved Jira Comments.
+   b. Identify the independent business aspects actually present in THIS ticket (e.g. happy path,
+      negative/validation, UI default state, edge/boundary data, permission/role-based behavior,
+      state transition, error handling, admin configuration/skip, calculation/business-rule
+      correctness, REST/API status-code and payload behavior -- this list is illustrative only, not
+      exhaustive or mandatory; use whatever aspects the ticket actually contains, and skip any that
+      don't apply).
+   c. Create exactly one sub test case per independent aspect found, numbered TC-${key}-01,
+      TC-${key}-02, TC-${key}-03, ... The count is flexible (2, 3, 5, 7, ...) based on the real
+      complexity of the ticket -- do not pad to reach a minimum, and do not omit an aspect the
+      ticket genuinely requires. Name each TC to reflect the actual business behavior under test.
    In tests/testcases/TC-${key}.md, give each TC-${key}-0X its own Given/When/Then and its own
    Expected Result section -- do not merge steps from different sub test cases into one shared table.
    In tests/e2e/TC-${key}.spec.ts, generate one independent test('TC-${key}-0X: ...', async ({ page })
@@ -205,56 +432,61 @@ Instructions:
 
 Generate or update these files now.`;
 
-  const tmpPromptPath = path.join(ROOT_DIR, `.tmp-copilot-prompt-${key}.txt`);
-  fs.writeFileSync(tmpPromptPath, fullPrompt, 'utf-8');
+  console.log(`⏳ Copilot AI is analyzing${summaryRelPath ? ' the condensed summary' : ' attachments/codebase OpenSpecs directly'} and generating Playwright test...`);
 
-  // Short, safe instruction passed as the CLI argument -- the actual (long,
-  // multi-line) prompt lives in the temp file so we never risk breaking
-  // quoting/newlines on the command line.
-  const shortInstruction =
-    `Read the file ${path.relative(ROOT_DIR, tmpPromptPath).replace(/\\/g, '/')} in the current working directory ` +
-    `and carry out ALL instructions written in it exactly, then generate/update the files it specifies.`;
+  const result = runCopilotPrompt(fullPrompt, { model: MODEL_ANALYSIS, tmpFileSuffix: `generate-${key}` });
+  const { error: copilotError, status: copilotStatus, output: copilotOutput } = result;
 
-  console.log(`⏳ Copilot AI is analyzing attachments, codebase OpenSpecs, and generating Playwright test...`);
-  console.log(`   📄 Full prompt written to: ${path.relative(ROOT_DIR, tmpPromptPath)}`);
-
-  const copilotBin = resolveWindowsBinary('copilot');
-  const copilotResult = safeSpawnSync(copilotBin, ['-p', shortInstruction, '--allow-all'], {
-    stdio: 'inherit',
-    cwd: ROOT_DIR
-  });
-
-  // Clean up the temp prompt file regardless of outcome (also protected by .gitignore).
-  fs.rmSync(tmpPromptPath, { force: true });
-
-  if (copilotResult.error) {
+  if (copilotError) {
     fail(
-      `Step 2 (Copilot generate) could not be started: ${copilotResult.error.message}\n` +
+      `Step 3 (Copilot generate) could not be started: ${copilotError.message}\n` +
       `   -> Make sure "copilot" CLI is installed and on PATH.\n` +
-      `   -> Pipeline stopped: Step 3/3 was NOT executed.`
+      `   -> Pipeline stopped: Step 4/4 was NOT executed.`
     );
   }
-  if (copilotResult.status !== 0) {
+  if (copilotStatus !== 0) {
     fail(
-      `Step 2 (Copilot generate) failed with exit code ${copilotResult.status}.\n` +
-      `   -> Pipeline stopped: Step 3/3 was NOT executed to avoid a confusing test run against a missing/incomplete spec.`
+      `Step 3 (Copilot generate) failed with exit code ${copilotStatus}.\n` +
+      `   -> Pipeline stopped: Step 4/4 was NOT executed to avoid a confusing test run against a missing/incomplete spec.`
     );
   }
   if (!fs.existsSync(fullSpecPath)) {
+    // Before treating this as a technical error, check whether the story was
+    // intentionally stopped per the mandatory Blocker & Open Questions SOP
+    // (README.md, section 11 - Giai đoạn 1). In that case NOT creating the
+    // spec file is the CORRECT, expected behavior, not a pipeline bug.
+    if (detectBlocker(key, copilotOutput)) {
+      printHeader(`🔴 STORY BỊ CHẶN DO CÓ OPEN QUESTIONS / BLOCKER — \x1b[36m${key}\x1b[0m`);
+      console.log(`\x1b[33m🔴 STORY BỊ CHẶN DO CÓ OPEN QUESTIONS / BLOCKER.\x1b[0m`);
+      console.log(`\x1b[33mPipeline dừng lại đúng quy trình (xem README.md mục 11 - Giai đoạn 1).\x1b[0m`);
+      console.log(`\x1b[33mVui lòng gửi Bảng Câu Hỏi cho PO/BA để làm rõ trước khi sinh test.\x1b[0m`);
+      console.log(`\n📄 Xem chi tiết Bảng Câu Hỏi tại: docs/tickets/${key}.md (mục "## 🔴 Open Questions & Blockers").`);
+      console.log(`\n➡️  Sau khi PO/BA phản hồi (Giai đoạn 2):`);
+      console.log(`   1. Nếu PO sửa Jira      -> npm run fetch-jira ${key}`);
+      console.log(`      Nếu PO chốt qua chat -> ghi nhận vào docs/tickets/${key}.md`);
+      console.log(`   2. Chạy lại /analyze-story để Clear Gate.`);
+      console.log(`   3. Chạy /new-test để sinh testcase + spec.`);
+      console.log(`   4. Chạy lại: npm run auto-test ${key}`);
+      console.log(`\n\x1b[33m⛔ Đây KHÔNG phải lỗi kỹ thuật -- Pipeline dừng chủ động để bảo vệ chất lượng test.\x1b[0m`);
+      console.log(`======================================================\n`);
+      // Distinct exit code (2) so this can be told apart from a real crash/error
+      // (exit code 1) in CI or by any wrapping script/dashboard.
+      process.exit(2);
+    }
     fail(
-      `Step 2 (Copilot generate) exited successfully but expected spec file was not created:\n` +
+      `Step 3 (Copilot generate) exited successfully but expected spec file was not created:\n` +
       `   ${relSpecPath}\n` +
-      `   -> Pipeline stopped: Step 3/3 was NOT executed.`
+      `   -> Pipeline stopped: Step 4/4 was NOT executed.`
     );
   }
 
-  console.log(`\x1b[32m✅ Step 2 completed: ${relSpecPath} generated.\x1b[0m`);
+  console.log(`\x1b[32m✅ Step 3 completed: ${relSpecPath} generated.\x1b[0m`);
   return { relSpecPath, fullSpecPath };
 }
 
-// ── STEP 3: RUN PLAYWRIGHT TESTS ──────────────────────────────────
-function runPlaywright(relSpecPath) {
-  console.log(`\n\x1b[1m[3/3] 🧪 Running Playwright test verification...\x1b[0m\n`);
+// ── STEP 4: RUN PLAYWRIGHT TESTS (local engine, 0 token) ──────────
+function runPlaywright(relSpecPath, label = '[4/4] 🧪 Running Playwright test verification...') {
+  console.log(`\n\x1b[1m${label}\x1b[0m\n`);
 
   // Playwright's test matcher expects forward-slash paths regardless of OS.
   const normalizedSpecPath = relSpecPath.split(path.sep).join('/');
@@ -266,19 +498,74 @@ function runPlaywright(relSpecPath) {
   });
 
   if (testResult.error) {
-    fail(`Step 3 (Playwright run) could not be started: ${testResult.error.message}`);
+    fail(`Step 4 (Playwright run) could not be started: ${testResult.error.message}`);
   }
 
   return testResult.status === 0;
 }
 
+// ── STEP 5 (CONDITIONAL, only runs when Step 4 fails): SELF-HEALING ──
+// Cheap model tier (claude-sonnet-5): diagnose the failure via
+// /fix-failed-test (Baseline Gate + Anti-Drift Guardrail), patch the spec/
+// Page Object if it's an authoring/technical issue, or file a Bug Report if
+// it's a genuine web bug. Non-fatal on its own failure -- the pipeline simply
+// reports the original FAILED result if self-healing can't run or can't fix it.
+function selfHealAndRetry(relSpecPath) {
+  console.log(`\n\x1b[1m🩺 Self-healing: diagnosing failed test (/fix-failed-test)...\x1b[0m`);
+
+  const normalizedSpecPath = relSpecPath.split(path.sep).join('/');
+
+  const prompt = `The Playwright test ${normalizedSpecPath} just FAILED on its run for ticket ${key}.
+
+Instructions:
+1. Follow .github/prompts/fix-failed-test.prompt.md exactly.
+2. Inspect the Playwright HTML report (playwright-report/) and test-results/ artifacts (trace,
+   screenshot, error context) from the run that just failed to diagnose the root cause.
+3. Apply the Baseline Gate from that prompt to decide whether this looks like an authoring/technical
+   issue (selector/timing/precondition/wrong assertion) vs a genuine web bug. Do NOT weaken or remove
+   assertions just to force a pass.
+4. If it is an authoring/technical issue: fix ${normalizedSpecPath} directly (and the related Page
+   Object under tests/pages/ if needed), keeping the original Expected Result intent unchanged.
+5. If you conclude with high confidence it is a genuine web/application bug (not an authoring issue):
+   do NOT modify any assertion -- leave the spec exactly as-is, and append a
+   "## 🐞 Bug Report (auto-detected by self-healing)" section to docs/tickets/${key}.md using the Bug
+   Report Form (Title, Repro steps, Actual, Expected, Severity) from the prompt.
+
+Only touch: ${normalizedSpecPath}, related Page Object files under tests/pages/, and (only for a
+genuine bug) docs/tickets/${key}.md. Do not touch any other file.`;
+
+  const result = runCopilotPrompt(prompt, { model: MODEL_SELF_HEAL, tmpFileSuffix: `fix-${key}` });
+
+  if (result.error || result.status !== 0) {
+    console.warn(`\x1b[33m⚠️  Self-healing step could not complete (exit code ${result.status}).\x1b[0m`);
+    console.warn(`   -> Reporting the original test result as-is; please diagnose manually with /fix-failed-test.`);
+    return false;
+  }
+
+  console.log(`\x1b[32m✅ Self-healing attempt completed. Re-running Playwright to verify...\x1b[0m`);
+  return true;
+}
+
 fetchJira();
-const { relSpecPath } = generateTest();
-const passed = runPlaywright(relSpecPath);
+const summaryRelPath = summarizeStory();
+const { relSpecPath } = generateTest(summaryRelPath);
+let passed = runPlaywright(relSpecPath);
+let selfHealed = false;
+
+if (!passed) {
+  const healApplied = selfHealAndRetry(relSpecPath);
+  if (healApplied) {
+    selfHealed = true;
+    passed = runPlaywright(relSpecPath, '🔁 Re-running Playwright test after self-healing fix...');
+  }
+}
 
 printHeader(`🎉 ALL-IN-ONE PIPELINE COMPLETED FOR \x1b[36m${key}\x1b[0m!`);
 console.log(`📄 Testcase:  tests/testcases/TC-${key}.md`);
 console.log(`🧪 Test Spec: ${relSpecPath}`);
+if (selfHealed) {
+  console.log(`🩺 Self-healing (/fix-failed-test on ${MODEL_SELF_HEAL}) was applied after the first run failed.`);
+}
 console.log(passed
   ? `\x1b[32m✅ RESULT: Playwright test PASSED\x1b[0m`
   : `\x1b[31m❌ RESULT: Playwright test FAILED (see report above / npm run report)\x1b[0m`);

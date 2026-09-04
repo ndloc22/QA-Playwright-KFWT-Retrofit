@@ -269,7 +269,7 @@ async function fetchJiraTicket(target) {
 
       // Cách 1: Thử Jira REST API qua session cookie
       try {
-        const res = await fetch(`/rest/api/2/issue/${ticketKey}?expand=renderedFields,names`, {
+        const res = await fetch(`/rest/api/2/issue/${ticketKey}?expand=renderedFields,names&fields=*all,comment`, {
           credentials: 'include',
           headers: { 'Accept': 'application/json' }
         });
@@ -302,6 +302,20 @@ async function fetchJiraTicket(target) {
             }
           }
 
+          // Trích xuất Comments (fields.comment.comments) — nguồn "Resolution Authority": khi
+          // PO/Dev đã chốt cách xử lý mâu thuẫn nghiệp vụ (vd 1 task vs 2 task) trực tiếp trong
+          // Jira Comments, đây là bằng chứng thoả thuận mới nhất, có thẩm quyền cao hơn Description/AC gốc.
+          const rawComments = (fields.comment && Array.isArray(fields.comment.comments)) ? fields.comment.comments : [];
+          const renderedComments = (rendered.comment && Array.isArray(rendered.comment.comments)) ? rendered.comment.comments : [];
+          const comments = rawComments.map((c, idx) => {
+            const renderedMatch = renderedComments[idx] || {};
+            return {
+              author: (c.updateAuthor && c.updateAuthor.displayName) || (c.author && c.author.displayName) || 'Unknown',
+              created: c.created || c.updated || '',
+              body: (renderedMatch.body || c.body || '').toString()
+            };
+          });
+
           restData = {
             key: ticketKey,
             summary: fields.summary || '',
@@ -316,6 +330,7 @@ async function fetchJiraTicket(target) {
             storyPoints: storyPoints,
             labels: fields.labels || [],
             components: (fields.components || []).map(c => c.name),
+            comments: comments,
             source: 'REST_API'
           };
         }
@@ -358,6 +373,22 @@ async function fetchJiraTicket(target) {
           }
         }
 
+        // DOM fallback cho Comments (Jira Server/DC classic layout) — nguồn Resolution Authority
+        // khi REST API không trả về (quyền hạn/permission) nhưng comment vẫn hiển thị trên trang.
+        const domComments = [];
+        document.querySelectorAll('.activity-comment, div[id^="comment-"]').forEach(node => {
+          const authorEl = node.querySelector('.action-details .user-hover, .action-head .user-hover, a.user-hover, .twixi-name');
+          const dateEl = node.querySelector('.action-details time, .date, time');
+          const bodyEl = node.querySelector('.action-body, .comment-body, .twixi-wrap .action-body');
+          const body = bodyEl ? bodyEl.innerHTML : '';
+          if (!body) return;
+          domComments.push({
+            author: authorEl ? authorEl.innerText.trim() : 'Unknown',
+            created: dateEl ? (dateEl.getAttribute('datetime') || dateEl.innerText.trim()) : '',
+            body
+          });
+        });
+
         restData = {
           key: ticketKey,
           summary: summaryEl ? summaryEl.innerText.trim() : fallbackTitle,
@@ -372,6 +403,7 @@ async function fetchJiraTicket(target) {
           storyPoints: null,
           labels: [],
           components: [],
+          comments: domComments,
           source: 'DOM_SCRAPE'
         };
       }
@@ -424,6 +456,14 @@ async function fetchJiraTicket(target) {
     if (ticketData.acceptanceCriteria && ticketData.acceptanceCriteria.includes('<')) {
       ticketData.acceptanceCriteria = stripHtml(ticketData.acceptanceCriteria);
     }
+    // Làm sạch nội dung từng comment (giữ author/created nguyên văn, chỉ strip HTML body)
+    ticketData.comments = (ticketData.comments || [])
+      .map(c => ({
+        author: c.author || 'Unknown',
+        created: c.created || '',
+        body: c.body && c.body.includes('<') ? stripHtml(c.body) : (c.body || '')
+      }))
+      .filter(c => c.body && c.body.trim());
 
     ticketData.url = url;
     ticketData.syncedAt = new Date().toISOString();
@@ -474,6 +514,18 @@ async function fetchJiraTicket(target) {
       }
     }
 
+    // Comments & Discussion — nguồn Resolution Authority: khi PO/Dev đã chốt cách xử lý
+    // mâu thuẫn nghiệp vụ (vd 1 task vs 2 task trong KFWT-1161) trực tiếp trong Jira Comments,
+    // /analyze-story và /new-test phải coi khối này là thoả thuận mới nhất, ưu tiên hơn Description/AC gốc.
+    let commentsSection = '';
+    if (ticketData.comments && ticketData.comments.length) {
+      commentsSection = `---\n\n## 💬 Jira Comments & Discussion\n\n` +
+        ticketData.comments.map((c, i) => {
+          const dateStr = c.created ? new Date(c.created).toLocaleString('vi-VN') : 'N/A';
+          return `**#${i + 1} — ${c.author}** _(${dateStr})_\n\n${c.body}\n`;
+        }).join('\n---\n\n') + '\n\n';
+    }
+
     // Định dạng Markdown
     const mdContent = `# [${ticketData.key}] ${ticketData.summary || 'Untitled Jira Ticket'}\n\n` +
       `| Thuộc tính | Giá trị |\n` +
@@ -493,6 +545,7 @@ async function fetchJiraTicket(target) {
       `---\n\n` +
       `## 🎯 Acceptance Criteria (AC)\n\n${ticketData.acceptanceCriteria || '*(See description above)*'}\n\n` +
       mediaSection +
+      commentsSection +
       `---\n\n` +
       `## 🤖 Copilot Automation Context\n` +
       `- **Target Spec Path**: \`tests/e2e/TC-${ticketData.key}.spec.ts\`\n` +
