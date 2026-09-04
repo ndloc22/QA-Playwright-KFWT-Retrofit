@@ -127,22 +127,89 @@ Từ bản nâng cấp mới, `fetch-jira.js` còn tự động:
 
 ## 🧪 7. Phân Tích Xung Đột & Sinh Test Tự Động Từ File Ticket Đã Lưu
 
-Sau khi file ticket (kèm ảnh) đã có trong `docs/tickets/`, quy trình chuẩn gồm 2 bước:
+Từ một Jira Ticket, có **2 cách** để đi tới bộ testcase + Playwright spec hoàn chỉnh. Chọn cách phù hợp với tình huống của bạn:
 
-### Bước 1 (khuyến nghị, đặc biệt khi ticket có ảnh/diagram): `/analyze-story`
+| Tình huống | Nên dùng |
+| --- | --- |
+| Muốn xong nhanh gọn cả pipeline, ticket đã rõ ràng hoặc bạn chấp nhận để Copilot tự dừng lại khi có Blocker | ✅ **Cách 1: 1-Click All-in-One** |
+| Muốn kiểm soát từng bước, xem kỹ kết quả `/analyze-story` trước khi cho sinh spec, hoặc đang xử lý lại một ticket sau khi PO đã confirm | ✅ **Cách 2: Từng bước qua Copilot Chat** |
+
+### ⚡ Cách 1: Lệnh 1-Click All-in-One (`npm run auto-test <KEY>`)
+
+Chạy trọn gói **4 bước tự động, phân tầng theo model AI** chỉ bằng 1 dòng lệnh, không cần mở Copilot Chat thủ công:
+
+```bash
+npm run auto-test KFWT-1161
+# hoặc dán thẳng link Jira:
+npm run auto-test https://jira.eon.com/browse/KFWT-1161
+```
+
+**🏗️ Kiến trúc phân tầng model (tối ưu token/chi phí AI Credits):**
+
+| Bước | Việc làm | Model / Engine | Vì sao |
+| :-: | --- | --- | --- |
+| `[1/4]` | 📥 Ingest Jira ticket + tải ảnh/diagram (`fetch-jira.js`) | **0 token** (browser scraping) | Không cần AI, chỉ scrape DOM |
+| `[2/4]` | 🧾 `/summarize-story`: đọc ticket + ảnh + Jira Comments + đối chiếu `docs/specs/codebase/` → cô đọng thành `docs/tickets/<KEY>.summary.json` | **`claude-sonnet-5`** | Việc trích xuất/đọc nội dung không đòi hỏi suy luận sâu — dùng model rẻ hơn để giảm chi phí |
+| `[3/4]` | 🤖 `/analyze-story` (giải quyết conflict) + `/new-test` (thiết kế test matrix + sinh `.spec.ts`) — đọc `summary.json` thay vì raw ảnh/YAML | **`claude-opus-4.8`** (mặc định) | Tận dụng tối đa chiều sâu suy luận và khả năng giải quyết logic phức tạp của dòng Opus, vẫn tối ưu chi phí vì chỉ nạp bản tóm tắt tinh gọn (~30k tokens) thay vì raw ảnh/YAML |
+| `[4/4]` | 🧪 Chạy `npx playwright test` verify | **0 token** (Playwright engine local) | Thực thi test không cần AI |
+| *(nếu `[4/4]` FAIL)* | 🩺 Self-healing: `/fix-failed-test` chẩn đoán + tự sửa lỗi kỹ thuật (selector/timing) hoặc xuất Bug Report nếu là bug web thật, rồi tự chạy lại test 1 lần để xác nhận | **`claude-sonnet-5`** | Chẩn đoán lỗi kỹ thuật thường không cần mức suy luận cao nhất — dùng model rẻ hơn cho self-healing |
+
+> Có thể override model từng bước qua biến môi trường `AUTO_TEST_SUMMARY_MODEL`, `AUTO_TEST_ANALYSIS_MODEL`, `AUTO_TEST_SELF_HEAL_MODEL` (vd khi cần thử nghiệm nâng/hạ tầng model cho 1 ticket khó) mà không cần sửa `scripts/auto-test.js`.
+>
+> 🔁 **Muốn hạ xuống model rẻ hơn cho bước `[3/4]`?** Chuyển sang `claude-sonnet-5` bất kỳ lúc nào — qua biến môi trường `AUTO_TEST_ANALYSIS_MODEL=claude-sonnet-5`, hoặc cờ dòng lệnh linh hoạt:
+> ```bash
+> npm run auto-test KFWT-1161 -- --sonnet
+> # hoặc chỉ định model tuỳ ý:
+> npm run auto-test KFWT-1161 -- --model claude-sonnet-5
+> ```
+> Cờ dòng lệnh được ưu tiên cao nhất, kế đến là biến môi trường, cuối cùng mới là mặc định `claude-opus-4.8`.
+
+**Khi gặp Blocker:** nếu Copilot phát hiện mâu thuẫn nghiêm trọng (Description ⇄ AC ⇄ Codebase Specs ⇄ Ảnh) ở bước `[3/4]`, pipeline **chủ động dừng lại** (không phải lỗi kỹ thuật) — thoát với **exit code 2** — và in ra **Bảng Câu Hỏi** cần gửi PO ngay trên terminal (xem chi tiết đầy đủ tại `docs/tickets/<KEY>.md`, mục `## 🔴 Open Questions & Blockers`). Cách xử lý:
+1. Gửi nguyên văn Bảng Câu Hỏi cho PO/BA (Jira comment hoặc Slack).
+2. Chờ PO chốt phương án. Nếu PO sửa trực tiếp trên Jira → chạy `npm run fetch-ticket <KEY>` để re-sync bản ticket mới nhất; nếu PO chốt qua chat → ghi nhận câu trả lời vào `docs/tickets/<KEY>.md` ngay dưới câu hỏi tương ứng.
+3. Chạy lại `npm run auto-test <KEY>` để pipeline chạy lại từ đầu với thông tin đã được làm rõ.
+
+> Xem đầy đủ quy trình 2 giai đoạn xử lý Blocker tại **mục 11**.
+
+### 🧩 Cách 2: Chạy Từng Bước Linh Hoạt Qua Copilot Chat
+
+Dùng khi muốn tự kiểm tra kết quả phân tích trước khi sinh spec, hoặc đang xử lý lại 1 ticket sau khi PO đã confirm.
+
+**Bước 0 (tùy chọn, khuyến nghị để tiết kiệm token khi ticket có nhiều ảnh/comment dài): `/summarize-story`**
+```markdown
+/summarize-story
+Hãy cô đọng #file:docs/tickets/KFWT-1161.md (kèm ảnh trong docs/tickets/KFWT-1161/ và Jira Comments) thành docs/tickets/KFWT-1161.summary.json
+```
+Nên chạy lệnh này với model rẻ (`claude-sonnet-5`) — trong Copilot CLI: `copilot --model claude-sonnet-5 -p "..."`. Kết quả `docs/tickets/<KEY>.summary.json` sẽ được `/analyze-story` và `/new-test` tự động ưu tiên đọc ở bước sau.
+
+**Bước 1 (khuyến nghị, đặc biệt khi ticket có ảnh/diagram): `/analyze-story`**
 ```markdown
 /analyze-story
-Hãy phân tích #file:docs/tickets/KFWT-1161.md (kèm toàn bộ ảnh trong docs/tickets/KFWT-1161/) và đối chiếu với #file:docs/specs/codebase/ui_components.yaml + #file:docs/specs/codebase/state_machine.yaml
+Hãy phân tích #file:docs/tickets/KFWT-1161.md (ưu tiên đọc docs/tickets/KFWT-1161.summary.json nếu đã có) và đối chiếu với #file:docs/specs/codebase/ui_components.yaml + #file:docs/specs/codebase/state_machine.yaml
 ```
-Copilot sẽ **xem trực tiếp ảnh mockup/diagram** (Multimodal Inspection), đối chiếu Description vs AC vs codebase thật, rồi:
-- 🔴 Nếu phát hiện **Blocker** (mâu thuẫn nghiêm trọng) → dừng lại, xuất bảng câu hỏi gửi PO/Tester, **chưa sinh spec.ts**.
+Nên chạy lệnh này với model mặc định (`claude-opus-4.8`) — trong Copilot CLI: `copilot --model claude-opus-4.8 -p "..."`. Copilot sẽ đối chiếu Description vs AC vs codebase thật (dựa trên `summary.json` nếu có, hoặc tự **xem trực tiếp ảnh mockup/diagram** nếu chưa có summary), rồi:
+- 🔴 Nếu phát hiện **Blocker** (mâu thuẫn nghiêm trọng) → dừng lại, xuất bảng câu hỏi gửi PO/Tester, **chưa sinh spec.ts**. Gửi bảng câu hỏi cho PO, chờ PO confirm, sau đó chạy `npm run fetch-ticket <KEY>` để re-sync ticket rồi chạy lại `/analyze-story`.
 - 🟡 Nếu chỉ có **Warning** (chi tiết nhỏ chưa chắc chắn) → cho phép sang bước 2, nhưng test sinh ra sẽ có chú thích `// ⚠️ ASSUMPTION:`.
 
-### Bước 2: `/new-test`
+> 🔁 Ticket đơn giản, muốn tiết kiệm chi phí? Hạ xuống `claude-sonnet-5`: `copilot --model claude-sonnet-5 -p "..."` (hoặc, khi chạy qua pipeline, `npm run auto-test KFWT-1161 -- --sonnet`).
+
+**Bước 2: `/new-test`**
 ```markdown
 Dựa vào #file:docs/tickets/KFWT-1161.md và bộ quy trình nén #file:docs/specs/process.yaml, hãy sinh testcase chi tiết tại tests/testcases/TC-KFWT-1161.md và Playwright spec tại tests/e2e/TC-KFWT-1161.spec.ts
 ```
-Copilot sẽ đọc trực tiếp ngữ cảnh từ file Markdown cục bộ mà không lo token phình to hay bị chặn bởi bảo mật SSO, đồng thời tự tra `docs/specs/codebase/ui_components.yaml` để lấy **selector chuẩn xác 100%** thay vì đoán.
+Nên chạy với model mặc định `claude-opus-4.8` (cùng tầng với `/analyze-story` — tận dụng tối đa chiều sâu suy luận của dòng Opus). Copilot sẽ đọc trực tiếp ngữ cảnh từ file Markdown cục bộ mà không lo token phình to hay bị chặn bởi bảo mật SSO, đồng thời tự tra `docs/specs/codebase/ui_components.yaml` để lấy **selector chuẩn xác 100%** thay vì đoán. Muốn hạ xuống model rẻ hơn? Chuyển sang `claude-sonnet-5` theo cùng cách ở Bước 1.
+
+**Bước 3: Chạy verify test**
+```bash
+npx playwright test tests/e2e/TC-KFWT-1161.spec.ts
+```
+
+**Bước 4 (nếu test FAIL): `/fix-failed-test`**
+```markdown
+/fix-failed-test
+Test tests/e2e/TC-KFWT-1161.spec.ts vừa fail, đây là log lỗi: ...
+```
+Nên chạy với model rẻ hơn (`claude-sonnet-5`) — chẩn đoán lỗi kỹ thuật/selector/timing thường không cần mức suy luận sâu nhất.
 
 ---
 
@@ -189,18 +256,62 @@ Script quét **READ-ONLY** toàn bộ `*.xhtml` + `*.p.json` trong thư mục ng
 
 ## 🛡️ 10. Cơ Chế Phát Hiện Xung Đột (Conflict Detection) Khi Sinh Test
 
-Trước khi sinh `.spec.ts` từ 1 Jira Story, lệnh `/analyze-story` (`.github/prompts/analyze-story.prompt.md`) bắt buộc:
-1. **Multimodal Inspection**: xem trực tiếp mọi ảnh trong `docs/tickets/<KEY>/attachments/` + `docs/tickets/<KEY>/screenshots/`.
-2. **Grounding**: đối chiếu với `docs/specs/codebase/ui_components.yaml` + `state_machine.yaml`.
-3. **So khớp chéo** Description ⇄ AC ⇄ Codebase Specs ⇄ Ảnh, phân loại:
+Trước khi sinh `.spec.ts` từ 1 Jira Story, pipeline chạy qua 2 tầng model:
+1. **`/summarize-story`** (model `claude-sonnet-5`) — trích xuất & cô đọng: xem trực tiếp mọi ảnh trong `docs/tickets/<KEY>/attachments/` + `docs/tickets/<KEY>/screenshots/`, đọc Jira Comments, đối chiếu `docs/specs/codebase/ui_components.yaml` + `state_machine.yaml`, ghi kết quả vào `docs/tickets/<KEY>.summary.json`. Bước này **không kết luận** Blocker/Warning.
+2. **`/analyze-story`** (model mặc định `claude-opus-4.8`, có thể hạ xuống `claude-sonnet-5` khi cần, `.github/prompts/analyze-story.prompt.md`) — đọc `summary.json` (ưu tiên) rồi **so khớp chéo** Description ⇄ AC ⇄ Codebase Specs ⇄ Ảnh, phân loại:
    - 🔴 **Blocker** → dừng lại, xuất bảng câu hỏi gửi PO/Tester, không sinh spec.
    - 🟡 **Warning** → vẫn sinh test, kèm chú thích `// ⚠️ ASSUMPTION:` tại vị trí liên quan.
 
-Prompt `/new-test` đã được cập nhật để **tự động gọi bước này trước** khi có Jira Ticket đính kèm (xem mục 7).
+Prompt `/new-test` (cũng chạy ở model mặc định `claude-opus-4.8`) đã được cập nhật để **tự động gọi bước này trước** khi có Jira Ticket đính kèm (xem mục 7).
+
+> 💡 Bước tốn nhiều token đầu vào (đọc ảnh/comment/YAML) chạy ở `/summarize-story` (`claude-sonnet-5`), còn `/analyze-story` + `/new-test` mặc định dùng `claude-opus-4.8` — tận dụng tối đa chiều sâu suy luận và khả năng giải quyết logic phức tạp của dòng Opus trên bản tóm tắt tinh gọn (~30k tokens). Khi ticket đơn giản, muốn tiết kiệm chi phí, Tester có thể hạ 2 bước này xuống `claude-sonnet-5` qua biến môi trường `AUTO_TEST_ANALYSIS_MODEL=claude-sonnet-5` hoặc cờ dòng lệnh `npm run auto-test KFWT-1161 -- --sonnet` (hoặc `--model claude-sonnet-5`) mà vẫn giữ nguyên chất lượng phân tích, vì model vẫn tự mở lại raw file nếu `summary.json` thiếu chi tiết cần thiết.
 
 ---
 
-## 🧬 11. Nhân Bản (Clone) Template Này Sang Dự Án Khác (vd: ASAP)
+## 🔴 11. Quy Trình Xử Lý Blocker & Open Questions (2 Giai Đoạn)
+
+Khi `/analyze-story` phát hiện **Blocker** (mâu thuẫn nghiêm trọng giữa Description ⇄ AC ⇄ Codebase Specs ⇄ Ảnh), story **KHÔNG được phép** sinh `.spec.ts` cho tới khi PO/BA chốt phương án. Quy trình chuẩn gồm **2 Giai đoạn** bắt buộc:
+
+### 🚩 Giai đoạn 1 — Khi phát hiện Blocker / Open Question
+
+1. **Dừng sinh mã `.spec.ts`** ngay lập tức để tránh rác mã nguồn và test sai nghiệp vụ (test sẽ fail hoặc kiểm thử nhầm hành vi chưa được xác nhận).
+2. **Xuất Bảng Câu Hỏi chuẩn 4 cột** gửi PO/BA, gồm đúng các cột:
+
+   | Vị trí xung đột | Bản chất xung đột | Câu hỏi chốt phương án cho PO | Tác động kiểm thử |
+   | --- | --- | --- | --- |
+   | (VD: AC #3 vs `state_machine.yaml`) | (Mô tả ngắn gọn mâu thuẫn) | (Câu hỏi Yes/No hoặc chọn phương án A/B rõ ràng) | (Test nào bị chặn / có nguy cơ sai nếu không làm rõ) |
+
+3. **Lưu vết tại local**: ghi Bảng Câu Hỏi vào file `docs/tickets/<KEY>.md`, dưới mục `## 🔴 Open Questions & Blockers` (tạo mục này nếu chưa có).
+4. **Thông báo cho người chốt phương án**: comment nguyên văn Bảng Câu Hỏi lên Jira ticket và/hoặc Slack cho PO/BA để chờ phản hồi. **Không tự suy đoán** thay PO.
+
+> ⛔ Trong Giai đoạn 1, pipeline `npm run auto-test <KEY>` sẽ **dừng đúng quy trình** (không phải lỗi kỹ thuật) và hiển thị thông báo yêu cầu Tester gửi Bảng Câu Hỏi cho PO/BA trước khi tiếp tục.
+
+### ✅ Giai đoạn 2 — Sau khi PO/BA giải quyết / phản hồi
+
+1. **Cập nhật "Nguồn chân lý" (Single Source of Truth)** trước tiên — đây là bước bắt buộc, không được sinh test dựa trên trí nhớ của Copilot:
+   - Nếu PO **sửa trực tiếp trên Jira** (Description/AC) → chạy lại:
+     ```bash
+     npm run fetch-ticket <KEY>
+     ```
+     để re-sync bản ticket sạch, mới nhất vào `docs/tickets/<KEY>.md`.
+   - Nếu PO **chốt qua comment/chat** (không sửa Jira) → ghi nhận nguyên văn câu trả lời vào `docs/tickets/<KEY>.md`, ngay dưới Bảng Câu Hỏi tương ứng (mục `## 🔴 Open Questions & Blockers` → đổi thành `## ✅ Resolved Questions` hoặc thêm phần trả lời bên dưới mỗi câu hỏi).
+2. **Chạy lại `/analyze-story`** để Copilot đối chiếu lại Description ⇄ AC ⇄ Codebase Specs ⇄ Ảnh với thông tin mới, xác nhận **Clear Gate** (không còn Blocker nào tồn đọng). Nếu vẫn còn mâu thuẫn → quay lại Giai đoạn 1.
+3. **Chạy `/new-test`** để sinh:
+   - Testcase phân rã modular: `tests/testcases/TC-<KEY>.md` (TC-<KEY>-01, -02, -03, ...).
+   - Playwright spec: `tests/e2e/TC-<KEY>.spec.ts`.
+4. **Cập nhật Page Object** (`tests/pages/<Feature>Page.ts`) nếu story phát sinh task/dialog/component mới chưa có selector.
+5. **Chạy verify syntax & smoke test** trước khi bàn giao:
+   ```bash
+   npx playwright test tests/e2e/TC-<KEY>.spec.ts
+   ```
+   Nếu test FAIL, chạy `/fix-failed-test` (model `claude-sonnet-5`) để tự chẩn đoán/sửa lỗi kỹ thuật hoặc xuất Bug Report nếu là bug web thật (xem mục 7, Bước 4). Khi chạy qua `npm run auto-test <KEY>`, bước này tự động kích hoạt và tự re-run 1 lần.
+6. **Commit và bàn giao**: commit `docs/tickets/<KEY>.md` (đã cập nhật, có thể kèm `docs/tickets/<KEY>.summary.json`), `tests/testcases/TC-<KEY>.md`, `tests/e2e/TC-<KEY>.spec.ts` và Page Object liên quan (nếu có).
+
+> 💡 Ghi nhớ: **Giai đoạn 1 = Dừng đúng lúc** (bảo vệ chất lượng), **Giai đoạn 2 = Đồng bộ nguồn chân lý trước khi sinh lại** (bảo đảm test luôn khớp với quyết định mới nhất của PO/BA).
+
+---
+
+## 🧬 12. Nhân Bản (Clone) Template Này Sang Dự Án Khác (vd: ASAP)
 
 Bộ khung này được thiết kế để **tái sử dụng cho bất kỳ hệ thống Axon Ivy nào khác** (không chỉ KFWT), ví dụ dự án `ASAP`. Các bước nhân bản:
 

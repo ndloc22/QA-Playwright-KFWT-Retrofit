@@ -39,6 +39,19 @@ const server = http.createServer((req, res) => {
 
         let mdContent = data.markdown;
         if (!mdContent) {
+          // Comments & Discussion — nguồn Resolution Authority: khi PO/Dev đã chốt cách xử lý
+          // mâu thuẫn nghiệp vụ (vd 1 task vs 2 task) ngay trong Jira Comments, khối này giúp
+          // /analyze-story và /new-test đọc được thỏa thuận mới nhất thay vì chỉ dựa Description/AC.
+          const comments = Array.isArray(data.comments) ? data.comments : [];
+          let commentsSection = '';
+          if (comments.length) {
+            commentsSection = `---\n\n## 💬 Jira Comments & Discussion\n\n` +
+              comments.map((c, i) => {
+                const dateStr = c.created ? new Date(c.created).toLocaleString('vi-VN') : 'N/A';
+                return `**#${i + 1} — ${c.author || 'Unknown'}** _(${dateStr})_\n\n${c.body || ''}\n`;
+              }).join('\n---\n\n') + '\n\n';
+          }
+
           mdContent = `# [${key}] ${data.summary || 'Untitled Jira Ticket'}\n\n` +
             `| Thuộc tính | Giá trị |\n` +
             `| :--- | :--- |\n` +
@@ -56,7 +69,7 @@ const server = http.createServer((req, res) => {
             `## 📝 Description\n\n${data.description || '*(No description provided)*'}\n\n` +
             `---\n\n` +
             `## 🎯 Acceptance Criteria (AC)\n\n${data.acceptanceCriteria || '*(See description above)*'}\n\n` +
-            `---\n\n` +
+            (commentsSection || `---\n\n`) +
             `## 🤖 Copilot Automation Context\n` +
             `- **Target Spec Path**: \`tests/e2e/TC-${key}.spec.ts\`\n` +
             `- **Test Plan Path**: \`tests/testcases/TC-${key}.md\`\n` +

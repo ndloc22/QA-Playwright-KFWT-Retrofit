@@ -1,0 +1,162 @@
+{
+  "key": "KFWT-1161",
+  "generatedAt": "2026-09-04T11:21:36.000Z",
+  "sourceModel": "claude-sonnet-5",
+  "images": [
+    {
+      "path": "docs/tickets/KFWT-1161/attachments/4064324_higher_res.png",
+      "notes": "BPMN excerpt of the new 'Primary and Secondary' user task node (KFWT-1161, assignee Ottinger, Fabian), annotated 'Mit REST Endpunkt' (with REST endpoint) and marked 'Skippable'. Two outgoing gateway branches from the task: (1) 'Only primary comissioning checked' loops back into an 'Update EAM' task and re-enters the same gateway before the task (retry loop while only primary is done); (2) 'Primary + Secondary comissioning' (both done) proceeds forward to 'Update eIOT' (Skippable) then 'Update EAM + iBet information' (Skippable) then End Event. Confirms task can only truly progress the process once BOTH primary and secondary flags are true, and every downstream EAM/eIOT step is individually skippable."
+    },
+    {
+      "path": "docs/tickets/KFWT-1161/attachments/4099165_NewFlow_confirm.png",
+      "notes": "Retrofit process placement diagram. Sequence: 'Configure updated technical place (UI)' -> 'Communication EIOT' task (crossed out with red X, i.e. removed/disabled from this position) -> gateway 'DigiONS Type?' -> branch 'RetroFit' -> gateway 'isReachSourceSinkTestRetrofit?' -> 'Source/sink Test Retrofit (UI or JSON Export/Import)' -> gateway 'is RetrofitStation Incomplete?' (complete/incomplete self-loop) -> on 'complete' path, a green-highlighted new node 'Primary and Secondary Commissioning' is inserted (green arrow confirms insertion point) -> 'EAM' task -> hidden system task -> 'Update status' -> gateway 'is MVFields Changed?' -> 'AcosDataExport' or 'Data Structure Maintainer mail'. A red box/arrow at the top marks that the whole highlighted branch (including the disabled 'Communication EIOT' task) was relocated from elsewhere in the process. Confirms for Retrofit the new commissioning step sits right after 'Source/Sink Test Retrofit' completes, and 'Communication EIOT' is removed from its old spot next to 'Configure updated technical place'."
+    }
+  ],
+  "comments": {
+    "hasComments": true,
+    "resolvedConflicts": [
+      {
+        "topic": "Split combined date field into separate primary/secondary commissioning date fields",
+        "author": "Jäger, Svenja (implementing El Aamouchi, Mohamed's request)",
+        "date": "13/7/2026",
+        "decision": "El Aamouchi asked (10/7) to split 'Datum der Inbetriebnahme' into 'Datum der primärtechnischen Inbetriebnahme' and 'Datum der sekundärtechnischen Inbetriebnahme'. Jäger confirmed (13/7) she added the secondary commissioning date field plus English labels."
+      },
+      {
+        "topic": "Meaning of 'if one status true and other false, keep first information'",
+        "author": "El Aamouchi, Mohamed / Ottinger, Fabian",
+        "date": "13/7/2026",
+        "decision": "Both primary-side and secondary-side commissioning must be 'true' before the process/task can proceed to the next step. Data from either side is stored/kept as soon as received, but the process only continues once both statuses are true (confirmed by Ottinger: 'We can't proceed until both status are true')."
+      },
+      {
+        "topic": "Number of tasks and whether the second (secondary) task can be skipped",
+        "author": "Ottinger, Fabian",
+        "date": "19/8/2026",
+        "decision": "Only two tasks are needed for this step: primary IBN and secondary IBN (with EAM update counted as part of these tasks). The order is fixed: primary IBN must happen before secondary IBN. Jäger's Option A/B skip proposal for the second task is rejected as not possible (see next entry)."
+      },
+      {
+        "topic": "Whether the secondary commissioning task can be skipped if all commissioning data is already provided",
+        "author": "Ottinger, Fabian",
+        "date": "19/8/2026",
+        "decision": "Not possible. Secondary technology IBN is provided via a PUT command from the operation technician ('Betrieb') app (e.g. SmapOne) or via central grid control UI; central grid control needs to see all station information and cannot bypass the secondary task."
+      },
+      {
+        "topic": "Where the 'Primary and Secondary Commissioning' step sits in the Retrofit process flow",
+        "author": "Ottinger, Fabian",
+        "date": "26/8/2026",
+        "decision": "The step takes place right after the Source/Sink Test (Retrofit) is done; central grid control approves that secondary commissioning is done once the source/sink test is complete."
+      },
+      {
+        "topic": "Placement of the e.IoT update relative to primary/secondary commissioning and EAM update in Retrofit",
+        "author": "Ottinger, Fabian",
+        "date": "28/8/2026",
+        "decision": "The e.IoT update happens after the Source/Sink Test in the Retrofit process (not right after primary commissioning as earlier suggested). During Source/Sink Test no one checks e.IoT (test is done off-site in testing rooms). Once secondary commissioning is done and appliances are connected at the station, technicians check e.IoT values. Nguyen Ba, Thong's proposed diagram placement (green area, after Source/Sink Test) was confirmed correct; the earlier 'after primary commissioning' suggestion was an incorrect edge case."
+      }
+    ],
+    "openQuestions": [
+      "What should happen if commissioning was previously set to true via endpoint/UI but a later call sets it back to false? (Jäger, Svenja, 6/8/2026 — not explicitly answered afterward)",
+      "Should the PUT/endpoint payload for commissioning status also include the commissioning date(s)? (Jäger, Svenja, 6/8/2026 — not explicitly answered)",
+      "What role should the new commissioning field/task be assigned to, and what role/credentials should call the update endpoint? New Mulesoft credentials and a new role name may be needed. (Jäger, Svenja, 6/8/2026 — not resolved)",
+      "What should happen if EAM data is missing when the primary/secondary commissioning step is reached? (Jäger, Svenja, 19/8/2026 open point; Ottinger, Fabian, 19/8/2026 only proposed an idea — ask central grid control to manually enter the primary commissioning date — not confirmed as final decision)",
+      "For the new 'Betrieb' (operation technician) role: what can they see in the search/UI, is access read-only or also editable, and should 'Nachrichtentechnik und Fernwirkanbindung - Leitsystem' be hidden entirely for this role? (Jäger, Svenja, 19/8/2026 — not resolved)",
+      "EAM field mapping for the new commissioning fields was requested from El Aamouchi, Mohamed by Ottinger, Fabian (19/8/2026) — no confirmation found in the comment thread that the mapping was subsequently provided."
+    ]
+  },
+  "codebaseGrounding": {
+    "dialogsMatched": [
+      {
+        "name": "SearchTelecontrolDevices",
+        "path": "eon-kfwg-core/src_hd/de/eon/kfwg/SearchTelecontrolDevices/SearchTelecontrolDevices.xhtml",
+        "fields": [
+          {
+            "id": "statusFilterMenu",
+            "type": "selectOneMenu",
+            "label": null,
+            "required": false,
+            "valueBinding": null
+          },
+          {
+            "id": "globalFilter",
+            "type": "inputText",
+            "label": "#{data.bean.telecontrolSearchDeviceLazyDataModel.globalFilter}",
+            "required": false,
+            "valueBinding": "#{data.bean.telecontrolSearchDeviceLazyDataModel.globalFilter}"
+          }
+        ]
+      },
+      {
+        "name": "WorkflowAdministration",
+        "path": "eon-kfwg-core/src_hd/de/eon/kfwg/Administration/configuration/WorkflowAdministration.xhtml",
+        "fields": [
+          {
+            "id": "workflowFeatureStrategyType",
+            "type": "selectOneMenu",
+            "label": "#{data.bean.configurationTabBean.workflowAdministrationTabBean.selectedStrategy}",
+            "required": false,
+            "valueBinding": "#{data.bean.configurationTabBean.workflowAdministrationTabBean.selectedStrategy}"
+          },
+          {
+            "id": "workflowFeatureUsernames",
+            "type": "inputTextarea",
+            "label": "#{data.bean.configurationTabBean.workflowAdministrationTabBean.editableFeatureFlag.usernameText}",
+            "required": false,
+            "valueBinding": "#{data.bean.configurationTabBean.workflowAdministrationTabBean.editableFeatureFlag.usernameText}"
+          }
+        ]
+      }
+    ],
+    "processesMatched": [
+      {
+        "name": "CreateTelecontrolDeviceDigiOnsRetrofit",
+        "tasks": [
+          "S51-f17: Configure updated technical place (CENTRAL_CONTROL_ENGINEERING)",
+          "S50-f17: Source/Sink Test Retrofit (CENTRAL_CONTROL_ENGINEERING)",
+          "U21-f1: Fulfill Source/Sink Test (CENTRAL_CONTROL_ENGINEERING)",
+          "S60-f32: Parametrization RTU (ROLE_FROM_ATTRIBUTE(in.roleAssignForParametrizationRTUTask))",
+          "S70-f39 / S71-f39: Admin Retry Task (EIOT Communication retry, KFWG_ADMIN)"
+        ],
+        "transitions": [
+          {
+            "from": "S50-f17 Source/Sink Test Retrofit",
+            "to": "f41 is RetrofitStation Incomplete?",
+            "conditions": "de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isRetrofitStationIncomplete(in.telecontrolDeviceId)",
+            "responsibleRole": "CENTRAL_CONTROL_ENGINEERING"
+          },
+          {
+            "from": "gateway",
+            "to": "f51 isReachSourceSinkTestRetrofit?",
+            "conditions": "de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().isReachSourceSinkTestRetrofit(in.telecontrolDeviceId)",
+            "responsibleRole": "CENTRAL_CONTROL_ENGINEERING"
+          },
+          {
+            "from": "gateway",
+            "to": "f71 turn off / EAM Transfer?",
+            "conditions": "Boolean.valueOf(ivy.var.de_eon_kfwg_core_eam_skipTransfer)",
+            "responsibleRole": "KFWG_ADMIN"
+          },
+          {
+            "from": "gateway",
+            "to": "f18/f3/f24 DigiONS Type?",
+            "conditions": "de.eon.kfwg.core.service.TelecontrolDeviceService.getInstance().findKFWGType(in.telecontrolDeviceId) == de.eon.kfwg.core.enums.TelecontrolDeviceType.DIGI_ONS",
+            "responsibleRole": "CENTRAL_CONTROL_ENGINEERING"
+          }
+        ]
+      }
+    ],
+    "notFound": [
+      "No existing dialog/data card in ui_components.yaml for 'Primary and secondary commissioning' / 'Primäre und Sekundäre IBN' (checkboxes, date fields, comment field) — this is entirely new UI to be built.",
+      "No existing task/process node named 'Primäre und Sekundäre Inbetriebnahme', 'Primäre Inbetriebnahme', 'Sekundäre Inbetriebnahme', or 'Update eIOT' in the CreateTelecontrolDeviceDigiOnsRetrofit process definition in state_machine.yaml — the new task(s) and eIOT step are not yet part of the modeled process.",
+      "No status/enum value 'PRIMARY_SECONDARY_COMMISSIONING' found anywhere in ui_components.yaml or state_machine.yaml (endpoint status referenced in the ticket does not exist yet in the codebase specs).",
+      "No role named 'Betrieb' / operation technician found in the roles list of any process in state_machine.yaml (existing roles are CENTRAL_CONTROL_ENGINEERING, COMMUNICATIONS_ENGINEERING, KFWG_ADMIN, in.roleAssignAdditionalInformationTask, in.roleAssignForParametrizationRTUTask) — this is a new role to be introduced."
+    ]
+  },
+  "storyDigest": {
+    "descriptionSummary": "As an operation technician ('Betrieb', a new role), document primary and secondary commissioning status of a station in a dedicated process task so that primary commissioning completion is recorded/verified before the process continues to the EAM update. A new task 'Primäre und Sekundäre Inbetriebnahme' / 'Primary and Secondary Commissioning' is inserted right after 'Configure updated technical Type (UI)'. It is a full, read-only view of all station fields, and must be skippable via the Workflow Administration configuration tab. A new data card 'Primary and secondary commissioning' / 'Primäre und Sekundäre IBN' is added at the bottom of the station view with 5 fields: checkbox 'Primary commissioning done' (default unchecked), checkbox 'Secondary commissioning done' (default unchecked), date 'Primary commissioning date' (optional), date 'Secondary commissioning date' (optional), and comment 'Comment commissioning' (optional). The task can only be completed once both checkboxes are checked, after which the process continues to 'Update eIOT'. Both done-flags and dates must also be updatable via a REST endpoint using status name PRIMARY_SECONDARY_COMMISSIONING. Once primary commissioning is done, EAM must be updated (since weeks may pass between primary and secondary commissioning). The step must be skippable, and a new status filter must be added to the telecontrol device search. For Retrofit specifically, the first task plus its EAM update are skipped because primary commissioning does not change there: the primary checkbox is pre-checked with an empty date, and only the secondary commissioning date/checkbox are updated in EAM (primary date/checkbox are not re-sent to EAM).",
+    "acceptanceCriteria": [],
+    "implementationHint": "Most of the time these tasks are completed via the REST endpoint rather than manually in the UI. Only for DigiONS + Retrofit are there two separate tasks, with the (later rejected in comments) option to skip the second task if all commissioning data is already provided. First task: 'Primäre Inbetriebnahme' / 'Primary Commissioning' — primary commissioning checkbox and date are mandatory here. An EAM Update occurs between the two tasks. Second task: 'Sekundäre Inbetriebnahme' / 'Secondary Commissioning' — primary commissioning checkbox/date are shown but disabled (read-only), while secondary commissioning checkbox and date are mandatory.",
+    "taskStepCounts": {
+      "description": 11,
+      "acceptanceCriteria": 0,
+      "implementationHint": 6
+    }
+  }
+}
