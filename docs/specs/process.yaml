@@ -1,0 +1,135 @@
+# OpenSpec — DigiONS / RetroFit Process (17 steps)
+# Compact machine-readable form of the numbered Confluence step pages.
+# Legend: id | title | responsible | jira | status = enum reached at step | rest = REST endpoints
+#         gate = branching condition | actions = buttons->effect | src = source .md
+status_enum:  # telecontrolDevice.status (digiONS), from "New DB structure for telecontroldevice table.md"
+  CREATE_TELECONTROL_DEVICE: 0
+  FIREWALL_CHANGE: 1
+  BUILD_TELECONTROL_DEVICE: 2
+  PARAMETRIZE_TELECONTROL_DEVICE: 3
+  CONNECTION_TEST_TELECONTROL_DEVICE: 4
+  SOURCE_SINK_PLAN: 5
+  SOURCE_SINK_TEST: 6
+  ADD_ADDITIONAL_INFO: 7
+  DONE: 8
+rest_status_slugs:  # additional status slugs used in REST paths
+  [BUILD_TELECONTROL_DEVICE, PARAMETRIZE_CENTRAL_CONTROL_SYSTEM, CONNECTION_TEST_TELECONTROL_DEVICE,
+   SOURCE_SINK_TEST, DEFINE_REGIONAL_CENTER]
+rest_base: "{system}/v1/kleinfernwirktechnik/telecontrol-devices"
+
+flows:
+  DigiONS:  [1,2,3,4,5,6,7,8a,9,10,11,12,13,14a,16,17]
+  RetroFit: [1b,2,3,4,5,6,7,8b,stocklist,10,10.1,11,12,13,15,16,17]
+
+steps:
+  - {id: 1,   title: Create DigiONS, responsible: KFWG-Admin, jira: EMP-385,
+     precond: none, sets_status: "Order Router / Router bestellen",
+     actions: "Erstellen->create n cases, auto-assign abstract station number + ASDU/IP; Abbrechen->close",
+     fields: [Anzahl der DigiONS, Anbindungsziel weiterer Leitstelle e.IoT],
+     notes: "n=1..99", src: "(1) Create DigiONS.md"}
+  - {id: 1b,  title: Create Retrofit variant C-Stations (start for Logistics), responsible: Logistics,
+     precond: none, sets_status: "Order Router / Router bestellen",
+     actions: "Erstellen->create n retrofit cases + auto assign; Abbrechen->close",
+     fields: [Anzahl der Nachruestvariante C-Stationen],
+     notes: "MSP + triggering regional center hidden for retrofit start", src: "(1b) Create Retrofit variant C-Stations (Process start for Logistics).md"}
+  - {id: 2,   title: Define IP and ASDU, responsible: System, jira: [EMP-382,EMP-390,EMP-414],
+     precond: "ASDU/IP value table available", actions: "auto-assign ASDU+IP for connection target",
+     fields: [ASDU, IP], notes: "cronjob; mail admin when remaining <= threshold(default 10)",
+     src: "(2) Define IP and ASDU (digiONS & Retro-Fit).md"}
+  - {id: 3,   title: Assign Router Info, responsible: System, jira: EMP-416,
+     precond: "process started", actions: "auto-assign router info, mark entry Used",
+     notes: "only E.ON routers with valid supplier; cronjob+mail on low stock",
+     src: "(3) Assign Router Info.md"}
+  - {id: 4,   title: Firewall Change Ordered, responsible: Communication-Engineering, jira: EMP-435,
+     precond: "IP/ASDU and Router assigned", actions: "Export/Import CSV; import validates & proceeds",
+     notes: "daily email CSV; task 'Firewall Antrag ... wartet auf Rueckmeldung'",
+     src: "(4) Firewall Change Ordered (digiONS & Retro-Fit).md"}
+  - {id: 5,   title: Build telecontrol device, responsible: Telecontrol-Supplier, jira: EMP-436,
+     precond: "firewall done + parametrization", sets_status: BUILD_TELECONTROL_DEVICE,
+     actions: "supplier reports device details; buildTelecontrolDeviceDone",
+     rest: "GET {base}?status=BUILD_TELECONTROL_DEVICE; PUT {base}/status/BUILD_TELECONTROL_DEVICE",
+     src: "(5) Build telecontrol device.md"}
+  - {id: 6,   title: Connection control system, responsible: Central-Control-Engineering (ZLT), jira: EMP-434,
+     precond: "device imported by supplier", actions: "UI/REST confirm; connectionTestDone",
+     fields: [connectionTestDone, midVoltageSwitchConfig, Parametrierung des Leitsystems],
+     rest: "GET {base}?status=PARAMETRIZE_CENTRAL_CONTROL_SYSTEM; PUT {base}/status/PARAMETRIZE_CENTRAL_CONTROL_SYSTEM",
+     src: "(6) Connection control system.md"}
+  - {id: 7,   title: Connection test, responsible: Telecontrol-Supplier,
+     precond: "connection to control system confirmed", sets_status: CONNECTION_TEST_TELECONTROL_DEVICE,
+     gate: "digiONS-type FS,NS -> 8a ; LM,LO,SM,SO -> 8b",
+     rest: "GET {base}?status=CONNECTION_TEST_TELECONTROL_DEVICE; PUT {base}/status/CONNECTION_TEST_TELECONTROL_DEVICE",
+     src: "(7) Connection test.md"}
+  - {id: 8a,  title: DigiONS Confirm Source-Sink-Test, responsible: Central-Control-Engineering (ZLT), jira: EMP-408,
+     precond: "connected, type FS or NS", sets_status: SOURCE_SINK_TEST,
+     gate: "no regional center yet -> step 9",
+     fields: [Installations-RZ, MS-Schaltanlagen-Konfiguration, Mittelspannungs-Feldbezeichnung 1-15, rONT, Quelle-Senke-Test erfolgreich abgeschlossen],
+     rest: "GET {base}?status=SOURCE_SINK_TEST; PUT {base}/status/SOURCE_SINK_TEST",
+     src: "(8a) DigiONS- Confirm Source-Sink-Test.md"}
+  - {id: 8b,  title: Retrofit Push to stocklist, responsible: System,
+     precond: "connection test type LM,LO,SM,SO (or MS-Switchgear 'KuRi')",
+     actions: "move retrofit device to stock list", src: "(8b) Retrofit- Push to stocklist.md"}
+  - {id: stocklist, title: Show stocklist retrofit variant C-Stations, responsible: Planer-DigiONS,
+     notes: "search retrofits in stock; pick to proceed to step 10 (Delivery)",
+     states: [INCOMPLETE_RETROFIT, SOURCE_SINK_TEST_RETROFIT, COMPLETED], src: "DigiONS - Retro-Fit Process.md"}
+  - {id: 9,   title: Definition of Regional Center, responsible: Central-Control-Engineering (ZLT),
+     precond: "source-sink-test confirmed without regional center", sets_status: DEFINE_REGIONAL_CENTER,
+     fields: [Installations-RZ, Regionalzentrum hinzugefuegt],
+     rest: "GET {base}?status=DEFINE_REGIONAL_CENTER; PUT {base}/status/DEFINE_REGIONAL_CENTER",
+     notes: "only if not already defined", src: "(9) Definition of Regional Center.md"}
+  - {id: 10,  title: Add additional information, responsible: Planer-DigiONS, jira: EMP-409,
+     precond: "DigiONS regional center defined OR RetroFit picked In-Stock with Action Delivery",
+     sets_status: ADD_ADDITIONAL_INFO,
+     actions: "Delivery->continue; In-Stock->push to stocklist",
+     fields: [Uebergabestation, DigiONS-Destination, DigiONS-Allgemeine-Informationen, DigiONS-Detailinformationen, Fernwirkanbindung-Allgemein, Fernwirkanbindung-Leitsystem, Nachrichtentechnik, Detailinformationen-Stromversorgung],
+     retrofit_extra: {mandatory: [NS Trafomessung vorhanden], optional: [NS Abgangsmessung vorhanden, Kommunikationsfaehige KuRi vorhanden]},
+     src: "(10) Add additional information.md"}
+  - {id: 10.1, title: Retrofit Data Structure Maintainer (email), responsible: System,
+     precond: "step 10 done for RetroFit type", notes: "email template 10_data_structure_mail_retrofit; subject 'Sachdaten- und Strukturpflege in EAM fuer {{STATION_NAME}}'",
+     src: "(10.1) Retrofit- Data Structure Maintainer (E-Mail Notification).md"}
+  - {id: 10a, title: Rework add additional information, responsible: Planer-DigiONS,
+     precond: "ZLT set task 12 back via 'Back'", notes: "same UI/fields/actions as step 10",
+     src: "(10a) Rework add additional information.md"}
+  - {id: 11,  title: Communication e.IoT, responsible: System, jira: [KFWT-342,KFWT-494],
+     precond: "step 10 done", actions: "transfer technical-place info to e.IoT; PATCH gateway",
+     rest: "GET /gateways/v2/{gatewayId}; PATCH /gateways/v2/{gateway.device.id}; base https://api.iot.eon.com/gateways/v2 (OAuth)",
+     notes: "gatewayId = <supplier_abbreviation>-<mac_address>", src: "(11) Communication e.IoT.md"}
+  - {id: 11a, title: e.IoT Verbindung fehlgeschlagen, responsible: KFWG-Admin,
+     precond: "issue in step 11 (gateway not found / connection)", actions: "retry interface call or skip e.IoT",
+     notes: "error 'Kein Gateway gefunden mit Stationsnummer <n> oder Gateway ID ...'", src: "(11a) e.IoT Verbindung fehlgeschlagen.md"}
+  - {id: 12,  title: Configure updated technical place, responsible: Central-Control-Engineering (ZLT), jira: KFWT-843,
+     precond: "step 11 done", actions: "Back->status ADD_ADDITIONAL_INFO; Save->if MV fields changed run e.IoT(13); Proceed->finish task",
+     notes: "in Transfer-station only 'Bemerkung/Note' editable", src: "(12) Configure updated technical place.md"}
+  - {id: 13,  title: Communication e.IoT, responsible: System,
+     precond: "step 12 changed MV field names 1-5", notes: "same e.IoT transfer as step 11; on issue -> 11a",
+     src: "(13) Communication e.IoT.md"}
+  - {id: 14a, title: DigiONS Data Structure Maintainer (email), responsible: System, jira: KFWT-585,
+     precond: "MV fields changed in step 12", deprecated: "will be removed with EAM transfer Go Live",
+     notes: "email template 13_data_structure_mail; subject 'Station {{STATION_NAME}} wurde in Betrieb genommen'",
+     src: "(14a) DigiONS- Data Structure Maintainer (E-Mail Notification).md"}
+  - {id: 15,  title: Retrofit Fulfill source-sink-test, responsible: Central-Control-Engineering, jira: KFWT-526,
+     precond: "retrofit RTU parametrized with 'KuRi with communication available'",
+     fields: [Quelle-Senke-Test erfolgreich abgeschlossen], notes: "needs >=1 KuRi checkbox",
+     src: "(15) Retrofit- Fulfill source-sink-test.md"}
+  - {id: 16,  title: ACOS Data Export (email), responsible: System, deprecated: "will be removed with EAM interface",
+     precond: "after step 12 (DigiONS) or step 15 (RetroFit)",
+     notes: "subject 'Datenexport <station> <abstract station number> fuer ACOS Datenpflege'; attach <dd_mm_yy>_Datenpflege_digiONS_<nr>.xlsx",
+     src: "(16) ACOS Data Export (E-Mail Notification).md"}
+  - id: 17
+    title: Transfer to EAM
+    responsible: System
+    jira: [KFWT-823, KFWT-824, KFWT-825, KFWT-828]
+    precond: "after 14a (DigiONS) OR 15 + retrofit complete (all 3 checkboxes set)"
+    sets_status: DONE
+    actions: "transfer EAM-relevant info; create/update equipments (EQUIs)"
+    src: "(17) Transfer to EAM.md"
+    sub_tasks:
+      - {id: 17.1, title: Admin Retry Task - Issue in EAM Transfer, responsible: KFWG-Admin, state: IN_REFINEMENT,
+         actions: "retry Transfer to EAM or skip / set process done", src: "(17.1) Admin Retry Task- Issue in EAM Transfer.md"}
+      - {id: 17.2, title: Email - missing EQUIs, responsible: data-structure-maintainer, state: IN_REFINEMENT,
+         notes: "template 01_EAM_missing_EQUIs", src: "(17.2) E-Mail Notification about missing EQUI-s.md"}
+      - {id: 17.3, title: Email - multiple EQUIs same objecttype, responsible: data-structure-maintainer, state: IN_REFINEMENT,
+         notes: "template 02_EAM_multiple_EQUIs", src: "(17.3) E-Mail Notification about multiple EQUIs of the same objecttype.md"}
+      - {id: 17.4, title: Planer Task - verify EAM Transfer Structure, responsible: "Planer-DigiONS <RZ>", state: IN_REFINEMENT,
+         actions: "Retry EAM Transfer OR skip (updated manually in EAM)",
+         eam_structure_digions_retrofit: [TP-HN00, DZ_S_ROU, DE_E_BAT, DE_E_UEE, "TP-HN00-SE01", DZ_A_SLT, DZ_S_SE],
+         notes: "WNGW variant omits DE_E_BAT/DE_E_UEE", src: "(17.4) Planer Task to verify the EAM Transfer Structure before EAM Transfer.md"}

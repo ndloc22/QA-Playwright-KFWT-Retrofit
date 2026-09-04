@@ -1,0 +1,58 @@
+# OpenSpec — Role Concept & Visibility Matrix
+# Compact form of "Role Concept.md" + "Visible-editable rules for KFWG search (digiONS - RetroFit).md".
+# JIRA: EMP-384 (regional roles for PLANER).
+
+roles:
+  regional:   # 1 role per region (n regions -> n roles per user)
+    - PLANER (Planung)
+    - SECONDARY_TECHNICIAN (Sekundaertechnik)
+  other:
+    - Admin
+    - COMMUNICATIONS_ENGINEERING (Nachrichtentechnik)
+    - CENTRAL_CONTROL_ENGINEERING (Zentrale Leittechnik / ZLT)
+    - Fernwirklieferant: [Sprecher, WAGO]        # telecontrol supplier
+    - Stationslieferant: [Graeper, SBG, Scheidt, Elsic]  # station supplier
+  note: >
+    Role assignment integrated with E.ON User Management bot. Normal scenario: 1 role for n regions.
+    Planer of each region also gets the "Add additional information" task at process end.
+
+regions_st_areas:  # id -> ST-Bereich (stable; change requires new release)
+  1: Osnabrueck
+  2: Muenster
+  3: Arnsberg
+  4: Recklinghausen
+  6: SmartPool ausserhalb Westnetz
+  7: Testanlagen
+  8: Trier
+  9: Schulung
+  10: Essen
+  11: Langenfeld
+  12: Neuss
+  13: Wesel
+  14: Siegen
+  15: Wesseling
+  16: Dueren
+  17: Bad Kreuznach
+  18: Saffig
+  19: Import WNS Sued
+
+# Visible/editable matrix per fieldset. Values: e=editable, v=visible, h=hidden.
+# Columns order: [Admin, PlanerDigiONS, SecondaryTechnician, CentralControlEngineering(ZLT), CommunicationEngineering]
+visibility_legend: {e: editable, v: visible, h: hidden}
+visibility_columns: [Admin, PlanerDigiONS, SecondaryTechnician, CentralControlEng, CommunicationEng]
+visibility:
+  DigiONS_Destination:            [v, v, v, v, v]   # only for DigiONS cases, after ConnectionTestDone
+  RetroFit_C_Station_Destination: [v, v, v, v, v]   # only for RetroFit cases, after ConnectionTestDone
+  Uebergabestation_TransferStation: [e, e, e, e, e] # Admin: edit technical place; Planer: Note,SAP Order,Regional center; others: Note only
+  DigiONS_Allgemeine_Informationen: [e, v, v, e, h] # ZLT edits only MV switch config + MV fieldnames 1-15
+  DigiONS_Detailinformationen:      [e, v, v, v, h]
+  Fernwirkanbindung_Allgemein:      [e, v, v, e, v]
+  Fernwirkanbindung_Leitsystem:     [e, v, v, e, v]
+  Nachrichtentechnik:               [e, v, v, v, e]
+  Preshared_KeyLan:                 [v, h, v, h, v]  # special field
+  Routerinformationen:              [e, v, v, v, e]
+  Detailinformationen_Stromversorgung: [e, v, v, v, h]
+  Parametrierung_Leitsystem:        [v, v, v, v, v]
+  Parametrierung_Fernwirkgeraet:    [v, v, v, v, v]  # only for RetroFit cases
+  Quelle_Senke_Test_done:           [v, v, v, v, v]
+  Regionalzentrum_hinzugefuegt:     [v, v, v, v, v]  # only for DigiONS cases

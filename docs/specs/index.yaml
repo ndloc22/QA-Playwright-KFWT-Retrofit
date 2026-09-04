@@ -1,0 +1,18 @@
+# OpenSpec Index — DigiONS / Retrofit (KFWT / KFWG, E.ON Westnetz)
+# Token-optimized machine-readable summary of docs/confluence/ (34 files, ~143 KB -> <7 KB specs).
+# AI: ALWAYS read these specs first. Only open the source .md in docs/confluence/ when a spec
+# entry is missing a detail you strictly need (each entry lists its `src` file).
+meta:
+  domain: KFWT (Kleinfernwirktechnik) / KFWG telecontrol devices
+  variants: [DigiONS, RetroFit (Nachrüstvariante C-Station), WNGW (Westnetz-Gateway)]
+  source_dir: docs/confluence/
+  language_note: source docs mix German (DE) / English (EN); field keys use EN/DB names.
+files:
+  process.yaml: 17-step DigiONS & RetroFit process, statuses, roles, REST, gating.
+  roles.yaml:   Role Concept, regions/ST-Areas, per-fieldset visible/editable matrix.
+  fields.yaml:  Data dictionary — station-number format, DSO, digiONS-Type, KuRi, NS, TP, VNB, status enum.
+key_codes:
+  digions_type_DigiONS: [FS, NS]            # -> path 8a (Source-Sink-Test)
+  digions_type_RetroFit: [LM, LO, SM, SO]   # -> path 8b (Push to stocklist)
+  station_number_format: "<DSO>-<jj>_<0001>_digiONS"   # e.g. WNS-23_1001_digiONS
+  DSO_by_connection_target: {Leitsystem: WES, Leitsystem_Nord: WNN, Leitsystem_Sued: WNS, legacy: WEN}
